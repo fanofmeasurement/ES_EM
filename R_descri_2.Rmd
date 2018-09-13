@@ -1,5 +1,5 @@
 ---
-title: "R的描述统计之二"
+title: "教育测量与统计——统计学ABC(2)"
 author: "李峰"
 date: '`r strftime(Sys.time(), format = "%B %d, %Y")`'
 output:

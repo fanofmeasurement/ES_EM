@@ -1,5 +1,5 @@
 ---
-title: "R的描述统计"
+title: "教育测量与统计——统计学ABC(1)"
 author: "李峰"
 date: '`r strftime(Sys.time(), format = "%B %d, %Y")`'
 output:
@@ -83,7 +83,7 @@ lines(x=d,y=dnorm(d,Meanpoli,Sdpoli),lty=2,col=2)
 
 *lty*定义线形，2是虚线。
 
-![ ](http://i4.buimg.com/567571/09d72584aa4bd1c8.png)
+![ ](https://www.ling.upenn.edu/~joseff/rstudy/plots/plotting/lty.png)
 
 *col*定义颜色，调色板中的索引。R中用palette()表示调色板，默认的是颜色是下面的几种，在默认情况下，col=2表示红色。这个颜色会重复利用，如指定col=10同样是红色。
 
@@ -122,8 +122,11 @@ plot(density(ReportCard$poli,na.rm=TRUE),main="政治分数的核密度图")
 ```{r}
 DrawL<-par(no.readonly = TRUE)
 par(mfrow=c(3,1),mar=c(4,6,4,4))
+
 hist(ReportCard$poli,xlab="政治分数",ylab="频率",main="政治分数直方图",
      cex.lab=0.8,freq=FALSE,ylim=c(0,0.05))
+
+
 Meanpoli=mean(ReportCard$poli,na.rm=TRUE)
 Sdpoli=sd(ReportCard$poli,na.rm=TRUE)
 d=seq(from=min(ReportCard$poli,na.rm=TRUE),to=max(ReportCard$poli,na.rm=TRUE),by=1)
