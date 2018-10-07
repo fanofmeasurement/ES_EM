@@ -1,0 +1,823 @@
+---
+title: "教育测量与统计——推论统计"
+author: "李峰 江西财经大学"
+date: '`r strftime(Sys.time(), format = "%B %d, %Y")`'
+output:
+  html_document: 
+    number_sections: yes
+    toc: yes
+---
+
+
+# 分布和抽样分布
+
+
+## 常见分布
+
+### 正态分布
+
+#### 正态分布的密度函数和形状
+
+
++ 一种常见的分布
++ 身高、体重、智力水平
++ 红细胞数、血红蛋白量
++ 产品的抗压强度、口径、长度
++ 同一种种子的重量
++ 某个地区的降水量
++ ...
+
+
+![](http://i4.fuimg.com/611786/757e69a72a09a0f8.jpg)
+
+
+连续型随机变量x的概率分布密度函数为：
+
+$$f(x)=\frac{1}{\sigma\sqrt{2\pi}}e^{\frac{(x-\mu)^2}{2\sigma^2}}$$
+
+其中，为$\mu$均值，$\sigma^2$为方差，则称随机变量$x$服从正态分布。
+
+
+
+```{r}
+a = seq(-5,5,length.out = 10000)
+b = dnorm(a,0,1)  
+plot(a,b,col=3,type='l')
+```
+
+```{r}
+a = seq(-5,5,length.out = 10000)
+b = pnorm(a,0,1)  
+plot(a,b,col=4,type='l')
+```
+
+
++ 单峰、对称的钟形曲线，对称轴是均值
++ 密度函数曲线在$x$等于均值时达到最大值
++ 密度函数是非负函数，渐近线是$x$轴，分布范围是($-\infty$,$\infty$)
++ 密度函数曲线与横轴所夹面积为1
+
+
+
+
+```{r}
+library(ggplot2)
+set.seed(1234)
+dat <- data.frame(rating = rnorm(200,0,1))
+ggplot(dat, aes(x=rating, fill='red')) + geom_density(alpha=.3)
+
+```
+
+
+```{r}
+dat <- data.frame(cond = factor(rep(c("A"), each=50)),                    rating = c(rnorm(200,0,1)))
+ggplot(dat, aes(x=rating, fill=cond)) + geom_density(alpha=.3)+ coord_flip()
+```
+
+
+
+
+```{r}
+
+dat <- data.frame(cond = factor(rep(c("y","x"), each=50)),                    rating = c(rnorm(200,0,1),rnorm(200,0.5,1)))
+
+
+# install.packages("devtools")
+# library(devtools)
+# install_github("easyGgplot2", "kassambara")
+
+
+library(easyGgplot2)
+ggplot2.histogram(data=dat, xName='rating',
+        groupName='cond', legendPosition="top",
+        alpha=0.3 ,xlim=c(-4,4))
+
+```
+
+
+#### 标准正态分布的取值和概率之间的关系
+
+
+
+![](http://i1.fuimg.com/611786/31abad736e77df22.jpg)
+
+
++ 68%的值距均值一个标准差以内
++ 95.45%的值距均值两个标准差以内
++ 99.73%距均值三个标准差以内
+
+
+![](http://i1.fuimg.com/611786/a16b733ba11c27a5.gif)
+
+
+
+
+#### 标准化
+
+
+![](http://i1.fuimg.com/611786/63430b25f9178016.gif)
+
+
+一般的意义上，标准化可以认为是一个去量纲的过程。
+
+$$Z=\frac{x-\mu}{\sigma}$$
+
+![](http://i1.fuimg.com/611786/b6eec9c7a4d6e557.gif)
+
+
+###  二项分布
+
+
+#### 二项分布的密度函数和形状
+
+
++ 重复进行n次独立试验
++  验的可能结果只有两个，成功或失败
++ 成功的概率用p表示，p在n次独立试验中不变
++ 用x表示成功的次数，n次试验中成功x次的概率服从二项分布
+
+
+
+> 以抛硬币为例，总共抛硬币100次（size=100），得到正面记为成功，即每次成功概率为0.5（prob=0.5），理想状态下，模拟100次伯努利试验（抛100次硬币），成功的次数应为50次。
+> 但是如果真的去抛100次的话，肯定不会正好是50次正面，可能是40次，也可能是60次，成功的次数是个随机变量。
+> 如果我们做这种无聊的事情，连着做30轮，每一轮都记一下成功次数，再把次数和出现次数的频率整理一下，就得到了一个二项分布的分布图。
+
+
+```{r}
+library(ggplot2)
+set.seed(1234)
+dat <- data.frame(rating = rbinom(1000,100,.5))
+ggplot(dat, aes(x=rating, fill='red')) + geom_density(alpha=.3)
+
+```
+
+
+
+二项分布的概率分布密度函数为：
+
+$$f(x)=\frac{n!}{x!(n-x)!}p^x(1-p)^{(n-x)}$$
+
+> 比如，某社团非常关心成员的流失情况，他们发现近些年，每年都有十分之一的社团成员不再参加任何社团活动。那么，3个社团成员中有一个下一年不再参加社团活动的概率是多少？
+
+$$p=0.1,n=3,x=1$$
+
+$$f(1)=\frac{3!}{1!(3-1)!}0.1^1(1-0.1)^{(3-1)}=0.243$$
+
+
+#### 二项分布和正态分布的关系
+
+n比较大，且np与nq不小于5，二项分布接近正态分布，其中：
+
+$$\mu=np$$
+$$\sigma=\sqrt{npq}$$
+
+
+
+## 抽样分布
+
+### 中心极限定理
+
+*中心极限定理的动画演示*
+
+http://onlinestatbook.com/stat_sim/sampling_dist/index.html
+
+
+
+
+
+设$x$是具有期望值为$\mu$，方差为$\sigma^2$的任意总体，则样本平均数$\bar{x}$的抽样分布，将随着$n$的增大而趋于正态分布，分布形式:
+$$\bar{x} \thicksim N(\mu,\frac{\sigma^2}{n})$$
+
+*例子：*  
+
+> 每个游客平均产生2kg的垃圾，标准差是1.5kg，帐篷节当天，武功山有两万左右的游客，那么当地的环保部门打算组织10辆次的压缩式垃圾车（载重量4.05吨）把这些垃圾运走，垃圾车把垃圾全部运走的概率是多大？
+
+
+### t分布
+
+若$n>=30$ 时，则可认为均值分布趋近于正态分布。若$n<30$，则可认为均值分布服从t分布。
+
+
+当总体标准差$\sigma$未知，以样本标准差$s$代替$\sigma$所得到的统计量:
+
+$$t \thicksim \frac{\bar{x}-\mu}{s^{\bar{x}}}$$
+*t分布的形态有如下特点*   
+
++ t分布受自由度制约，每一个自由度都有一条t分布密度曲线。
++ 以纵轴为对称轴，左右对称，且在t=0取得最大值。
++ 与标准正态分布曲线相比，t分布顶部略低，两尾稍高且平；df越小，这种趋势越明显，df越大，t分布越趋近于正态分布。
++ 当n>30时，t分布和正态分布的区别很小；当n>100时，t分布与标准正态分布相同。
+
+
+
+```{r}
+set.seed(12345)
+x<-rnorm(1000,0,1)
+Ord<-order(x,decreasing=FALSE)
+x<-x[Ord]
+y<-dnorm(x,0,1)
+plot(x,y,type="l",ylab="密度",main="标准正态分布与不同自由度下的t分布密度函数",lwd=1.5)
+lc<-2
+for(i in c(2,5,30)){
+  x<-rt(1000,i)
+  Ord<-order(x,decreasing=FALSE)
+  x<-x[Ord]
+  y<-dt(x,i)
+  lines(x,y,lty=lc)
+  lc<-lc+1
+}
+legend("topright",title="自由度",c("标准正态分布","2个","5个","30个"),lty=c(1,2,3,4),cex=0.5,bty="n")
+
+```
+
+
+### 卡方分布
+
+#### 卡方分布的定义
+
+对如下标准正态分布：
+```{r}
+library(ggplot2)
+set.seed(1234)
+dat <- data.frame(rating = rnorm(200,0,1))
+ggplot(dat, aes(x=rating, fill='red')) + geom_density(alpha=.3)
+
+```
+
+如果我们从中随机选择一个值，并且平方，那这个值大于等于4的概率是多大？  
+
+问题再复杂一点，如果我们从中随机抽取两个值，并且分别平方，然后加和：
+$$X=\sum_{i=1}^2 Z_i^2$$
+现在来猜一猜，这个平方和大于等于6的概率是多大？
+
+为了解决这个问题，统计学家构造了$\chi^2$分布:
+$$X \thicksim \chi^2(k)$$
+
+卡方分布形态随着自由度变化而不同，k是其自由度，下图自由度为2的卡方分布：
+
+```{r}
+x<-rchisq(1000,2)
+Ord<-order(x,decreasing=FALSE)
+x<-x[Ord]
+y<-dchisq(x,2)
+plot(x,y,xlim=c(-1,35),type="l")
+```
+
+观察一下，$x>=6$的概率在0.05左右。
+
+
+*卡方分布的形态有如下特点* 
+
++ k越大，密度曲线越平缓，$\chi^2$的可能取值越离散
++ n越大，密度曲线越趋于对称
++ 卡方分布的期望是$k$，方差是$2k$
+
+```{r}
+
+set.seed(12345)
+x<-rnorm(1000,0,1)
+Ord<-order(x,decreasing=FALSE)
+x<-x[Ord]
+y<-dnorm(x,0,1)
+plot(x,y,xlim=c(-1,35),type="l",ylab="密度",main="标准正态分布与不同自由度下的卡方分布密度函数",lwd=1.5)
+#######不同自由度的卡方分布
+
+df<-c(1,5,8,15)
+for(i in 1:4){
+  x<-rchisq(1000,df[i])
+  Ord<-order(x,decreasing=FALSE)
+  x<-x[Ord]
+  y<-dchisq(x,df[i])
+  lines(x,y,lty=i+1)
+}
+legend("topright",title="自由度",c("标准正态分布",df),lty=c(1,2,3,4,5),cex=0.5,bty="n")
+
+```
+
+
+
+
+
+#### 卡方分布可用于比较样本方差和总体方差
+
+
+对于任意的正态分布：
+$$X=\sum_{i=1}^n (\frac{x_i-\mu}{\sigma})^2$$
+
+即：
+
+$$X=\frac{(x_1-\mu)^2}{\sigma ^2}+\frac{(x_2-\mu)^2}{\sigma^2}+
+    \frac{(x_3-\mu)^2}{\sigma^2}+ \dots +\frac{(x_n-\mu)^2}{\sigma^2}$$
+
+
+
+继续变化为：
+
+
+$$X=\frac{\sum_{i=1}^n {(x_i-\mu)^2}}{\sigma ^2}$$
+总体方差已知的情况下，对于一个样本来说：
+
+$$X=\frac{\sum_{i=1}^n {(x_i-\bar{x})^2}}{\sigma ^2}=\frac{SS}{\sigma ^2}$$
+
+由于：
+
+$$s^2=\frac{SS}{n-1}$$
+所以：
+
+$$SS=s^2(n-1)$$
+
+代入上式，则：
+$$X=\frac{s^2(n-1)}{\sigma^2}$$
+
+经过上述变化，$\chi^2$就变成了关于样本方差的一个分布，可用于比较样本方差和总体方差的差异，但是这个时候其服从的自由度为$(n-1)$的卡方分布。
+
+$$X \thicksim \chi^2(n-1)$$
+
+*例子*  
+
+> 公司生产螺母，假设按照工艺要求，螺母直径的方差不应超过0.0002，一个随机样本（n=10）的样本方差为0.0003，这批样本有没有超过工艺要求？
+
+
+![](http://i4.fuimg.com/611786/dec780ba9c057627.jpg)
+
+
+
+
+#### 卡方分布可用于比较观测频数和期望频数的差异
+
+对于二项分布来说，当$n$足够大且$np>=5$或$nq>=5$的时候，二项分布可以近似看作正态分布，$\mu=np$，$\sigma=\sqrt{npq}$。
+
+
+$$X=\sum_{i=1}^n (\frac{x-np}{\sqrt{npq}})^2$$
+
+
+$$X=\sum_{i=1}^n \frac{(x-np)^2}{npq}$$
+
+由于$n=np+n(1-p)$，$n=x+(n-x)$，而且$q=1-p$，
+
+$$X=\frac{(x-np)^2}{np}+\frac{(n-x-nq)^2}{nq}$$
+
+进一步整理，可以一般化为;
+
+$$X=\sum_{i=1}^n \frac{(O_i-E_i)^2}{E_i}\thicksim \chi^2(n-1)$$
+*例子：*  
+
+> 随机地将麻将色子抛掷300次，检验该色子的六个面是否均匀。结果1-6点向上的次数依次是，43，49，56，45，66，41。这个筛子的六个面是否均匀？
+
+
+
+### F分布
+
+#### F分布的定义
+
+
+设有两个正态分布的总体，其均值和方差分别为$\mu_1$、$\sigma_1^2$和$\mu_2$、$\sigma_2^2$，
+从两总体中分别随机抽取容量为$n_1$和$n_2$的样本，每个样本都可计算$\chi^2$值，每个随机变量$\chi^2$除以各自对应的自由度$(n_1-1)$与$(n_2-1)$后再相比，称为F比率。
+
+$$F=\frac{\chi_1^2/(n_1-1)}{\chi_2^2/(n_2-1)}$$
+
+由于：
+  
+$$ X=\frac{\Sigma(x_i-\bar{x})^2}{\sigma^2}=\frac{(n-1)S_{n-1}^2}{\sigma^2}$$
+
+所以：
+
+$$F=\frac{(n_1-1)S_{n-1}^2}{\sigma_1^2(n_1-1)}/\frac{(n_2-1)S_{n-2}^2}{\sigma_2^2(n_2-1)}=\frac{S_{n-1}^2}{\sigma_1^2}/\frac{S_{n-2}^2}{\sigma_2^2}$$
+
+如果令：
+
+$$\sigma_1^2=\sigma_2^2$$
+
+则有：
+
+$$F=\frac{S_{n-1}^2}{S_{n-2}^2}$$
+
+F可以理解为方差之比。
+
+*F分布的形态有如下特点*   
+
++ 非对称分布
++ 有两个自由度
++ 以自由度$n_1-1$与$n_2-1$为参数的分布族，不同自由度决定了F分布的形状
+
+```{r}
+###############F分布
+set.seed(12345)
+x<-rnorm(1000,0,1)
+Ord<-order(x,decreasing=FALSE)
+x<-x[Ord]
+y<-dnorm(x,0,1)
+plot(x,y,xlim=c(-1,5),ylim=c(0,2),type="l",ylab="密度",main="标准正态分布与不同自由度下的F分布密度函数",lwd=1.5)
+#######不同自由度的F分布
+df1<-c(10,15,30,100)
+df2<-c(10,20,25,110)
+for(i in 1:4){
+  x<-rf(1000,df1[i],df2[i])
+  Ord<-order(x,decreasing=FALSE)
+  x<-x[Ord]
+  y<-df(x,df1[i],df2[i])
+  lines(x,y,lty=i+1)
+}
+legend("topright",title="自由度",c("标准正态分布",paste(df1,df2,sep="-")),lty=1:5,cex=0.5,bty="n")
+
+```
+
+
+
+*例子：*  
+
+> 假设你以后从事采购方面的工作，你们需要一种零件，有来自全球各地的供应商来竞标，其中有两家条件最好，口碑、质量都不错，而且都送来了10件样品，你们对他们提供的样品都进行了检查。发现两个供应商所提供零件的某重要指标（直径）的均值都相同，但是方差不同，分别是$s_1^2=0.0003$和$s_2^2=0.0001$。二者所产零件的方差相同吗？
+
+
+
+# 假设检验
+
+
+## 系统差异和抽样误差
+
+
+> 假设我们是很好的朋友，我生病住院了，你去医院的住院部看我。你在住院部的一楼捡到一沓化验单，一看，这化验单都是血检，大部分指标你都不认识，但是有一个你认识，是血液粘稠度。
+这沓化验单有二、三十张，粘稠度有高有低，假设你比较好奇，算了一下，大概均值是7，一般来说，全血粘稠度在5-6之间，做这些化验的病人血液粘稠度整体偏高一些。
+医院送检化验单，都是以科室为单位。现在知道这个住院部里有四个科，一楼是骨科，二楼是心血管科，三楼是肿瘤科，四楼是儿科。  
+现在的问题是，这沓化验单可能是哪个科的？
+
++ 先画一下四个科的总体分布,我们假定（合理地）骨科病人的血液粘稠度服从$N(5.5,0.5)$，心血管科、肿瘤科和儿科病人的血液粘稠度分别服从$N(6.5,0.2)$、$N(6,0.5)$和$N(5,0.2)$。
+
+
+```{r}
+library(ggplot2)
+dat <- data.frame(cond = factor(rep(c("骨科","心血管科","肿瘤科","儿科"), each=200)),  rating = c(rnorm(200,5.5,2),rnorm(200,6.8,1),rnorm(200,6,2),rnorm(200,5,0.2)))
+ggplot(dat, aes(x=rating, fill=cond)) + geom_density(alpha=.3) + xlim(0, 12)
+```
+
+
++ 从均值大小上来看，手里这沓化验单的粘稠度均值和心血管科最接近。可以比一下看看，但是我们只知道化验单粘稠度的均值是7，能和总体分布进行比较吗？
+**总体分布由个体组成，我们手里只有化验单的均值**，比较也是和均值的分布进行比。
+
++ 假设我们手里的化验单有25张，画一下各科的样本均值分布。那么骨科病人的血液粘稠度的样本均值近似服从$N(5.5,0.1)$，心血管科、肿瘤科和儿科病人的血液粘稠度分别服从$N(6.5,0.04)$、$N(6,0.1)$和$N(5,0.04)$。
+
+
+```{r}
+library(ggplot2)
+dat <- data.frame(cond = factor(rep(c("骨科","心血管科","肿瘤科","儿科"), each=200)),  rating = c(rnorm(200,5.5,0.4),rnorm(200,6.8,0.2),rnorm(200,6,0.4),rnorm(200,5,0.04)))
+ggplot(dat, aes(x=rating, fill=cond)) + geom_density(alpha=.3)
+```
+
++ 现在比一下的话，样本均值7和心血管科样本均值的均值最接近，但也有可能是肿瘤科的，而且，也可能这沓化验单根本不是这四个科中任意一个的，可能是别的住院部、甚至是别的医院的，可能性是无穷的。
+
++ 先和肿瘤科的样本均值分布比一下：
+
+```{r}
+library(ggplot2)
+dat <- data.frame(cond = factor(rep(c("肿瘤科"), each=200)),  rating = c(rnorm(200,6,0.4)))
+ggplot(dat, aes(x=rating, fill=cond)) + geom_density(alpha=.3)+ geom_point(aes(x=7,y=0))+geom_vline(aes(xintercept=7),
+            color="blue", linetype="dashed", size=1)+geom_vline(aes(xintercept=6),
+            color="red", linetype="dashed", size=1)
+```
+
+
++ 现在的问题是，样本均值7和肿瘤样本均值的均值有1的差距，这个1的差距是怎么造成的？
+
++ 回忆一下之前介绍过的总体和抽样，从总体中任意抽取一个样本，由于抽样误差的原因，样本统计量和总体参数总是有差异的。所以个差距可能是抽样误差带来的。
+
+![](http://i4.fuimg.com/611786/eaad79455f1fab5f.png)
+
++ 但是，也可能根本就不是肿瘤科的，而是心血管科的。通俗的说，他俩一个循环系统的，一个是肿瘤疾病的治疗，不是一回事，这种差异就是系统差异。
+
+
+```{r}
+library(ggplot2)
+dat <- data.frame(cond = factor(rep(c("心血管科","肿瘤科"), each=200)),  rating = c(rnorm(200,6.8,0.2),rnorm(200,6,0.4)))
+ggplot(dat, aes(x=rating, fill=cond)) + geom_density(alpha=.3)+ geom_point(aes(x=7,y=0))+geom_vline(aes(xintercept=7),
+            color="blue", linetype="dashed", size=1)+geom_vline(aes(xintercept=6),
+            color="red", linetype="dashed", size=1)+geom_vline(aes(xintercept=6.8),
+            color="black", linetype="dashed", size=1)
+```
+
+
++ 如果是系统差异是不是就没有抽样误差了？也不是，毕竟是从总体中做的抽样，差距1中也包含着抽样误差。那我们怎么判断这个1的差距到底是抽样误差还是既有抽样误差也有系统差异。 通过构建统计量的方法：
+
+$$统计量=\frac{系统差异+抽样误差}{抽样误差}$$
+
+对这个例子来说：
+
+$$统计量=\frac{1}{0.4}=2.5$$
+
+更一般化：
+
+$$统计量=\frac{\bar{x}-\mu}{s^{\bar{x}}}$$
+
+这个统计量其实就是$z$：
+
+$$z \thicksim \frac{\bar{x}-\mu}{s^{\bar{x}}}$$
+
+
+
++ 如果系统差异为0，则$z$接近1，如果系统差异不为0，则$z$>1。系统差异如果接近抽样误差的大小，则$z$接近2。如果$z$接近2，会发生什么呢？
+
+
+```{r}
+library(ggplot2)
+dat <- data.frame(cond = factor(rep(c("肿瘤科"), each=200)),  rating = c(rnorm(200,6,0.4)))
+den<-data.frame(density(dat$rating)[c("x","y")])
+p<-ggplot(den,aes(x,y))+
+  geom_area(data = subset(den, x > 6.8), fill = "pink") +
+  geom_area(data = subset(den, x < 5.2), fill = "pink")+
+  geom_point(aes(x=7,y=0))+
+  geom_line()
+p
+```
+
++ 这时的z就变成了比较大或者比较小的值，粉色区域的面积之和5%，一侧是2.5%。假设我们拿到的这沓化验单（$\bar{x}=7$）属于肿瘤科，那么他也是肿瘤科的样本均值分布中出现概率比较小的值。
+
+
++ 要注意，如果我们拿到的这沓化验单（$\bar{x}=7$）属于肿瘤科，我们只做了一次抽样，就得到了一个这么大的样本均值，这里面是不是有点问题？如果这沓化验单真的是肿瘤科的，那对一次抽样来说，样本均值（$\bar{x}=7$）应该在分布的中间区域，而不是两侧。
+
+
+![](http://i2.tiimg.com/611786/078fbf6932cbd09f.png)
+
+
++ 事实上，我们也不知道这沓化验单究竟是哪个科，我们只是猜了一下，可能猜错了。这个猜和判断是否猜错的过程就是假设检验：
+
+1. “猜”构成了一个假设，称为虚无假设，虚无假设不应该轻易被拒绝，比如我们就不会猜这沓化验单来自儿科，因为实在离的太远了；
+2. 虚无假设的补集，称为备注假设，我们“猜”这沓化验单属于肿瘤科，那么备注假设就是这沓化验单不属于肿瘤科；
+3. 我们用于判断“系统差异+抽样误差”和“抽样误差”大小关系的$z$是统计量；
+4. 我们刚才画出来的粉色区域是拒绝域，如果统计量落到了拒绝域里，我们就拒绝虚无假设，那就是承认自己猜错了。
+
+
+**下面几个问题，如果要进行假设检验的话，虚无假设是什么？**
+
+
+
+> 一位老师给9位学生一个20分的是非题测验。他想了解这组学生是否与过去学生的成绩不同。 过去学生的平均成绩是 9.0。 9位学生的分数是: 6, 7, 7, 8, 8, 8, 9, 9, 10.现在的学生是否与过去的学生成绩不同？
+
+
+![](http://i2.tiimg.com/611786/7390fd43b4a637f5.jpg)
+
+
+
+> 每天玩30分钟的超级马里奥，连续2个月后，志愿者大脑右海马体、右前额皮质以及小脑都有明显的改善，而这些区域主要负责记忆形成、战略规划、肌肉控制以及空间导航。
+
+
+
+
+> 最近的研究表明，卵磷脂（在大豆、蛋和肝中含有）被确定能增加特定的脑化学物质，这种物质能帮助调节记忆及运动协调性。研究者采用两组分开的刚出生的老鼠样本，第一个样本中的10只老鼠给予常规饮食，包含标准数量的卵磷脂，另一个样本中的5只老鼠喂养特殊饮食，几乎不含卵磷脂。
+6个月之后，每只老鼠分别接受特定设计的学习题目的测验，这些题目同时需要记忆与运动协调性。实验的目的是为了显示由于缺少卵磷脂而产生的行为缺陷。每只老鼠的分数是在它解决题目时犯的错误次数。
+
+
+
+![](http://i2.tiimg.com/611786/997d357bf387dc49.jpg)
+
+
++ 假设检验的一般过程
+
+1. 根据假设选择单尾还是双尾检验；
+2. 确定置信水平，$\alpha$通常定在0.05；
+3. 确定使用的统计量和自由度；
+4. 根据单尾或双尾、置信水平、统计量和自由度，确定拒绝域；
+5. 计算统计量；
+6. 决定接受还是拒绝零假设，并报告结果。
+
+
+## 单样本t检验
+
+
+> t.test(数值型变量名~因子，data=数据框名，paired=FALSE，var.equal=TRUE/FALSE，mu=检验值，alternative=检验方向)
+
+*例子：*
+
+一位老师给9位学生一个20分的是非题测验。已知过去的学生做这套测验平均为10份，他想了解现在这批学生的成绩和过去的学生是否有显著差异。9位学生的分数是: 6, 7, 7, 8, 8, 8, 9, 9, 10. （用 $\alpha$ = 0.05的显著性水平）
+
+
+```{r}
+x<-c(6, 7, 7, 8, 8, 8, 9, 9, 10)
+library(MASS)
+t.test(x,alternative = "two.sided",mu=10)
+```
+
+
++ 如果这个问题换一下，这个老师想知道这批学生的成绩是否明显低于10分？
+
+```{r}
+t.test(x,alternative = "less", mu=10)
+```
+
+
+
+## 独立样本t检验
+
+
+### 等方差的情况
+
+若总体方差$\sigma_1^2$和$\sigma_2^2$未知，但由经验可知相等，则$\sigma^2_{x_1-x_2}$的理论估计为：
+
+\begin{equation}\label{eq:1}
+  \sigma^2_{x_1-x_2} = \frac{S_p}{n_1}+ \frac{S_p}{n_2},
+\end{equation}
+
+其中，
+\begin{equation}\label{eq:2}
+  S_p = \frac{(n_1-1)S_1^2+(n_2-1)S_2^2}{n_1+n_2-2},
+\end{equation}
+称为合并方差。
+
+```{r}
+par(mfrow=c(2,1),mar=c(4,4,4,4))
+set.seed(12345)
+Pop1<-rnorm(10000,mean=2,sd=2)   ###两总体方差相等
+Pop2<-rnorm(10000,mean=10,sd=2)
+Diff<-vector()
+Sdx1<-vector()
+Sdx2<-vector()
+for(i in 1:2000){
+ x1<-sample(Pop1,size=100,replace=TRUE)
+ x2<-sample(Pop2,size=120,replace=TRUE)
+ Diff<-c(Diff,(mean(x1)-mean(x2)))
+ Sdx1<-c(Sdx1,sd(x1))
+ Sdx2<-c(Sdx2,sd(x2))
+}
+plot(density(Diff),xlab="mean(x1)-mean(x2)",ylab="Density",main="均值差的抽样分布(等方差)",cex.main=0.7,cex.lab=0.7) 
+points(mean(Diff),sd(Diff),pch=1,col=1)
+S1<-mean(Sdx1)
+S2<-mean(Sdx2)
+Sp<-((100-1)*S1^2+(120-1)*S2^2)/(100+120-2)
+points((2-10),sqrt(Sp/100+Sp/120),pch=2,col=2)
+```
+
+
+
+
+```{r}
+ReportCard<-read.table(file="ReportCard.txt",header=TRUE,sep=" ")
+Forest<-read.table(file="ForestData.txt",header=TRUE,sep="	")
+Forest$month<-factor(Forest$month,levels=c("jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"))
+Tmp<-subset(Forest,Forest$month=="jan" | Forest$month=="aug")
+t.test(temp~month,data=Tmp,paired=FALSE,var.equal=TRUE)
+```
+
+### 不等方差的情况
+
+若总体方差$\sigma_1^2$和$\sigma_2^2$未知且不相等时，则$\sigma^2_{x_1-x_2}$的理论估计为：
+
+\begin{equation}\label{eq:3}
+  \sigma^2_{x_1-x_2} = \frac{S_1}{n_1}+ \frac{S_2}{n_2},
+\end{equation}
+
+```{r}
+set.seed(12345)
+Pop1<-rnorm(10000,mean=2,sd=2)    ###两总体方差不等
+Pop2<-rnorm(10000,mean=10,sd=4)
+Diff<-vector()
+Sdx1<-vector()
+Sdx2<-vector()
+for(i in 1:2000){
+ x1<-sample(Pop1,size=100,replace=TRUE)
+ x2<-sample(Pop2,size=120,replace=TRUE)
+ Diff<-c(Diff,(mean(x1)-mean(x2)))
+ Sdx1<-c(Sdx1,sd(x1))
+ Sdx2<-c(Sdx2,sd(x2))
+ }
+plot(density(Diff),xlab="mean(x1)-mean(x2)",ylab="Density",main="均值差的抽样分布(不等方差)",cex.main=0.7,cex.lab=0.7) 
+points(mean(Diff),sd(Diff),pch=1,col=1)
+S1<-mean(Sdx1)
+S2<-mean(Sdx2)
+points((2-10),sqrt(S1^2/100+S2^2/120),pch=2,col=2)
+
+```
+红色圆圈为估计值，黑色三角为理论值，二者重合。
+
+方差不等时，Welch提出仍采用$\frac{\bar{x}_1-\bar{x}_2}{\sigma_{x_1-x_2}}$作为统计量，但并不服从自由度为$n_1+n_2-2$的t分布，而是服从自由度为：
+
+\begin{equation}\label{eq:4}
+  df = \frac{(\frac{S^2_1}{n_1}+\frac{S^2_2}{n_2})^2}{\frac{(\frac{S^2_1}{n_1})^2}{n_1-1}+\frac{(\frac{S^2_2}{n_2})^2}{n_2-1}},
+\end{equation}
+
+
+的t分布，再依据t分布进行统计判断，即Welch调整。
+
+
+```{r}
+t.test(temp~month,data=Tmp,paired=FALSE,var.equal=FALSE)
+```
+
+
+### 等方差和不等方差的结果如何选择
+
+
+应采用以上哪个结果应禁言是否方差齐性，采用levene's方差同质检验。levene's是对离差的绝对值的均值差异进行判断，如果有显著差异即方差不齐，否则方差齐性。
+
+
+```{r}
+#install.packages("car")
+library("car")
+leveneTest(Tmp$temp,Tmp$month, center=mean)
+```
+
+---
+
+以上可以形成一个自动化的部分。
+
+
+```{r}
+varequ<-leveneTest(Tmp$temp,Tmp$month, center=mean)
+varequp<-varequ$`Pr(>F)`[1]
+if (varequp>=.05) t.test(temp~month,data=Tmp,paired=FALSE,var.equal=TRUE) else{
+  t.test(temp~month,data=Tmp,paired=FALSE,var.equal=FALSE)
+}
+```
+
+
+
+
+## 配对样本t检验
+
+配对样本的均值差异检验本质上是单样本的t检验问题。即，可以将一一对应的观测值求差，得到差值样本，若差值样本的均值和0有显著差异，则认为配对样本的两总体的均值差有显著差异，反之则不显著。
+即，对于单样本的t检验：
+
+
+\begin{equation}\label{eq:5}
+  t=\frac{\bar{x}}{S/\sqrt{n}},
+\end{equation}
+
+\begin{equation}\label{eq:6}
+  t=\frac{\bar{D}}{S_D/\sqrt{n}},
+\end{equation}
+
+可以先得到差值样本，然后用将其和0比较：
+
+
+```{r}
+Diff<-ReportCard$chi-ReportCard$math
+t.test(Diff,mu=0)
+```
+
+
+也可以直接使用函数：
+
+
+```{r}
+ReportCard<-na.omit(ReportCard)
+t.test(ReportCard$chi,ReportCard$math,paired=TRUE)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,9 +1,10 @@
 ---
 title: "教育测量与统计——描述统计"
-author: "李峰 江西财经大学"
-date: '`r strftime(Sys.time(), format = "%B %d, %Y")`'
+author: "李峰 江西财经大学"
+date: ’`r strftime(Sys.time(), format = "%B %d, %Y")`‘
 output:
-  html_document: 
+  html_document:
+    number_sections: yes
     toc: yes
 ---
 
