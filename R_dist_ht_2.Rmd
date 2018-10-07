@@ -618,14 +618,14 @@ t.test(x,alternative = "less", mu=10)
 
 若总体方差$\sigma_1^2$和$\sigma_2^2$未知，但由经验可知相等，则$\sigma^2_{x_1-x_2}$的理论估计为：
 
-\begin{equation}\label{eq:1}
+$$
   \sigma^2_{x_1-x_2} = \frac{S_p}{n_1}+ \frac{S_p}{n_2},
-\end{equation}
+$$
 
 其中，
-\begin{equation}\label{eq:2}
+$$
   S_p = \frac{(n_1-1)S_1^2+(n_2-1)S_2^2}{n_1+n_2-2},
-\end{equation}
+$$
 称为合并方差。
 
 ```{r}
@@ -668,9 +668,9 @@ t.test(temp~month,data=Tmp,paired=FALSE,var.equal=TRUE)
 
 若总体方差$\sigma_1^2$和$\sigma_2^2$未知且不相等时，则$\sigma^2_{x_1-x_2}$的理论估计为：
 
-\begin{equation}\label{eq:3}
+$$
   \sigma^2_{x_1-x_2} = \frac{S_1}{n_1}+ \frac{S_2}{n_2},
-\end{equation}
+$$
 
 ```{r}
 set.seed(12345)
@@ -699,9 +699,9 @@ points((2-10),sqrt(S1^2/100+S2^2/120),pch=2,col=2)
 
 方差不等时，Welch提出仍采用$\frac{\bar{x}_1-\bar{x}_2}{\sigma_{x_1-x_2}}$作为统计量，但并不服从自由度为$n_1+n_2-2$的t分布，而是服从自由度为：
 
-\begin{equation}\label{eq:4}
+$$
   df = \frac{(\frac{S^2_1}{n_1}+\frac{S^2_2}{n_2})^2}{\frac{(\frac{S^2_1}{n_1})^2}{n_1-1}+\frac{(\frac{S^2_2}{n_2})^2}{n_2-1}},
-\end{equation}
+$$
 
 
 的t分布，再依据t分布进行统计判断，即Welch调整。
@@ -746,13 +746,13 @@ if (varequp>=.05) t.test(temp~month,data=Tmp,paired=FALSE,var.equal=TRUE) else{
 即，对于单样本的t检验：
 
 
-\begin{equation}\label{eq:5}
+$$
   t=\frac{\bar{x}}{S/\sqrt{n}},
-\end{equation}
+$$
 
-\begin{equation}\label{eq:6}
+$$
   t=\frac{\bar{D}}{S_D/\sqrt{n}},
-\end{equation}
+$$
 
 可以先得到差值样本，然后用将其和0比较：
 
