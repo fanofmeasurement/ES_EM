@@ -1,6 +1,10 @@
 ---
 title: "教育测量与统计——推论统计"
+<<<<<<< HEAD
 author: "李峰 江西财经大学"
+=======
+author: "李峰"
+>>>>>>> 7279293a283d4ffd46e9c84d2924089fdb302821
 date: '`r strftime(Sys.time(), format = "%B %d, %Y")`'
 output:
   html_document: 
@@ -70,6 +74,7 @@ ggplot(dat, aes(x=rating, fill='red')) + geom_density(alpha=.3)
 
 
 ```{r}
+<<<<<<< HEAD
 dat <- data.frame(cond = factor(rep(c("A"), each=50)),                    rating = c(rnorm(200,0,1)))
 ggplot(dat, aes(x=rating, fill=cond)) + geom_density(alpha=.3)+ coord_flip()
 ```
@@ -95,6 +100,15 @@ ggplot2.histogram(data=dat, xName='rating',
 ```
 
 
+=======
+
+dat <- data.frame(cond = factor(rep(c("A","B","C","D"), each=200)),                    rating = c(rnorm(200,0,1),rnorm(200,0,0.447),rnorm(200,0,2.236),rnorm(200,-2,0.5)))
+ggplot(dat, aes(x=rating, fill=cond)) + geom_density(alpha=.3)
+```
+
+
+
+>>>>>>> 7279293a283d4ffd46e9c84d2924089fdb302821
 #### 标准正态分布的取值和概率之间的关系
 
 
@@ -177,8 +191,11 @@ $$\sigma=\sqrt{npq}$$
 
 ### 中心极限定理
 
+<<<<<<< HEAD
 *中心极限定理的动画演示*
 
+=======
+>>>>>>> 7279293a283d4ffd46e9c84d2924089fdb302821
 http://onlinestatbook.com/stat_sim/sampling_dist/index.html
 
 
@@ -188,20 +205,30 @@ http://onlinestatbook.com/stat_sim/sampling_dist/index.html
 设$x$是具有期望值为$\mu$，方差为$\sigma^2$的任意总体，则样本平均数$\bar{x}$的抽样分布，将随着$n$的增大而趋于正态分布，分布形式:
 $$\bar{x} \thicksim N(\mu,\frac{\sigma^2}{n})$$
 
+<<<<<<< HEAD
 *例子：*  
+=======
+>>>>>>> 7279293a283d4ffd46e9c84d2924089fdb302821
 
 > 每个游客平均产生2kg的垃圾，标准差是1.5kg，帐篷节当天，武功山有两万左右的游客，那么当地的环保部门打算组织10辆次的压缩式垃圾车（载重量4.05吨）把这些垃圾运走，垃圾车把垃圾全部运走的概率是多大？
 
 
 ### t分布
 
+<<<<<<< HEAD
 若$n>=30$ 时，则可认为均值分布趋近于正态分布。若$n<30$，则可认为均值分布服从t分布。
+=======
+若$n>=30$时，则可认为均值分布趋近于正态分布。若$n<30$，则可认为均值分布服从t分布。
+>>>>>>> 7279293a283d4ffd46e9c84d2924089fdb302821
 
 
 当总体标准差$\sigma$未知，以样本标准差$s$代替$\sigma$所得到的统计量:
 
 $$t \thicksim \frac{\bar{x}-\mu}{s^{\bar{x}}}$$
+<<<<<<< HEAD
 *t分布的形态有如下特点*   
+=======
+>>>>>>> 7279293a283d4ffd46e9c84d2924089fdb302821
 
 + t分布受自由度制约，每一个自由度都有一条t分布密度曲线。
 + 以纵轴为对称轴，左右对称，且在t=0取得最大值。
@@ -231,6 +258,7 @@ legend("topright",title="自由度",c("标准正态分布","2个","5个","30个"
 ```
 
 
+<<<<<<< HEAD
 ### 卡方分布
 
 #### 卡方分布的定义
@@ -559,12 +587,19 @@ p
 > 每天玩30分钟的超级马里奥，连续2个月后，志愿者大脑右海马体、右前额皮质以及小脑都有明显的改善，而这些区域主要负责记忆形成、战略规划、肌肉控制以及空间导航。
 
 
+=======
+# 假设检验
+
+
+## 系统变异和随机误差
+>>>>>>> 7279293a283d4ffd46e9c84d2924089fdb302821
 
 
 > 最近的研究表明，卵磷脂（在大豆、蛋和肝中含有）被确定能增加特定的脑化学物质，这种物质能帮助调节记忆及运动协调性。研究者采用两组分开的刚出生的老鼠样本，第一个样本中的10只老鼠给予常规饮食，包含标准数量的卵磷脂，另一个样本中的5只老鼠喂养特殊饮食，几乎不含卵磷脂。
 6个月之后，每只老鼠分别接受特定设计的学习题目的测验，这些题目同时需要记忆与运动协调性。实验的目的是为了显示由于缺少卵磷脂而产生的行为缺陷。每只老鼠的分数是在它解决题目时犯的错误次数。
 
 
+<<<<<<< HEAD
 
 ![](http://i2.tiimg.com/611786/997d357bf387dc49.jpg)
 
@@ -759,24 +794,6 @@ t.test(Diff,mu=0)
 ReportCard<-na.omit(ReportCard)
 t.test(ReportCard$chi,ReportCard$math,paired=TRUE)
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
