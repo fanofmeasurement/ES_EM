@@ -449,12 +449,12 @@ legend("topright",title="自由度",c("标准正态分布",paste(df1,df2,sep="-"
 医院送检化验单，都是以科室为单位。现在知道这个住院部里有四个科，一楼是骨科，二楼是心血管科，三楼是肿瘤科，四楼是儿科。  
 现在的问题是，这沓化验单可能是哪个科的？
 
-+ 先画一下四个科的总体分布,我们假定（合理地）骨科病人的血液粘稠度服从$N(5.5,0.5)$，心血管科、肿瘤科和儿科病人的血液粘稠度分别服从$N(6.5,0.2)$、$N(6,0.5)$和$N(5,0.2)$。
++ 先画一下四个科的总体分布,我们假定（合理地）骨科病人的血液粘稠度服从$N(5.5,2)$，心血管科、肿瘤科和儿科病人的血液粘稠度分别服从$N(6.8,2)$、$N(6,2)$和$N(5,0.2)$。
 
 
 ```{r}
 library(ggplot2)
-dat <- data.frame(cond = factor(rep(c("骨科","心血管科","肿瘤科","儿科"), each=200)),  rating = c(rnorm(200,5.5,2),rnorm(200,6.8,1),rnorm(200,6,2),rnorm(200,5,0.2)))
+dat <- data.frame(cond = factor(rep(c("骨科","心血管科","肿瘤科","儿科"), each=200)),  rating = c(rnorm(200,5.5,2),rnorm(200,6,2),rnorm(200,6,2),rnorm(200,5,0.2)))
 ggplot(dat, aes(x=rating, fill=cond)) + geom_density(alpha=.3) + xlim(0, 12)
 ```
 
@@ -462,12 +462,12 @@ ggplot(dat, aes(x=rating, fill=cond)) + geom_density(alpha=.3) + xlim(0, 12)
 + 从均值大小上来看，手里这沓化验单的粘稠度均值和心血管科最接近。可以比一下看看，但是我们只知道化验单粘稠度的均值是7，能和总体分布进行比较吗？
 **总体分布由个体组成，我们手里只有化验单的均值**，比较也是和均值的分布进行比。
 
-+ 假设我们手里的化验单有25张，画一下各科的样本均值分布。那么骨科病人的血液粘稠度的样本均值近似服从$N(5.5,0.1)$，心血管科、肿瘤科和儿科病人的血液粘稠度分别服从$N(6.5,0.04)$、$N(6,0.1)$和$N(5,0.04)$。
++ 假设我们手里的化验单有25张，画一下各科的样本均值分布。那么骨科病人的血液粘稠度的样本均值近似服从$N(5.5,0.4)$，心血管科、肿瘤科和儿科病人的血液粘稠度分别服从$N(6.5,0.4)$、$N(6,0.4)$和$N(5,0.04)$。
 
 
 ```{r}
 library(ggplot2)
-dat <- data.frame(cond = factor(rep(c("骨科","心血管科","肿瘤科","儿科"), each=200)),  rating = c(rnorm(200,5.5,0.4),rnorm(200,6.8,0.2),rnorm(200,6,0.4),rnorm(200,5,0.04)))
+dat <- data.frame(cond = factor(rep(c("骨科","心血管科","肿瘤科","儿科"), each=200)),  rating = c(rnorm(200,5.5,0.4),rnorm(200,6.5,0.4),rnorm(200,6,0.4),rnorm(200,5,0.04)))
 ggplot(dat, aes(x=rating, fill=cond)) + geom_density(alpha=.3)
 ```
 
@@ -495,7 +495,7 @@ ggplot(dat, aes(x=rating, fill=cond)) + geom_density(alpha=.3)+ geom_point(aes(x
 
 ```{r}
 library(ggplot2)
-dat <- data.frame(cond = factor(rep(c("心血管科","肿瘤科"), each=200)),  rating = c(rnorm(200,6.8,0.2),rnorm(200,6,0.4)))
+dat <- data.frame(cond = factor(rep(c("心血管科","肿瘤科"), each=200)),  rating = c(rnorm(200,6.5,0.4),rnorm(200,6,0.4)))
 ggplot(dat, aes(x=rating, fill=cond)) + geom_density(alpha=.3)+ geom_point(aes(x=7,y=0))+geom_vline(aes(xintercept=7),
             color="blue", linetype="dashed", size=1)+geom_vline(aes(xintercept=6),
             color="red", linetype="dashed", size=1)+geom_vline(aes(xintercept=6.8),
