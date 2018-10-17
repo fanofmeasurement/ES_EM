@@ -1,0 +1,377 @@
+---
+title: "教育测量与统计——方差和回归"
+author: "李峰 江西财经大学"
+date: '`r strftime(Sys.time(), format = "%B %d, %Y")`'
+output:
+  html_document: 
+    number_sections: yes
+    toc: yes
+---
+
+
+## 方差分析
+
+简单的说，方差分析用于处理多组均值差异的问题。在方差分析的谱系中，有：
+
++ 单因素方差分析  
++ 多因素方差分析  
++ 带协变量的方差分析  
+
+![](http://i4.fuimg.com/611786/ce01820f1e71bc0d.jpg)
+
+我们主要是以单因素方差分析为例介绍方差分析的基本原理。
+
+### 示例
+
+数据：  
+![](http://i2.tiimg.com/611786/04a27405cc4d7a26.jpg)
+图形化：
+![](http://i4.fuimg.com/611786/be0abf01085b5823.jpg)
+
+
+
+如果这个数据变化一下：  
+![](http://i2.tiimg.com/611786/16aea28dc8c0f30c.jpg)
+图形化：
+![](http://i4.fuimg.com/611786/6a6871b8f5e202c4.jpg)
+
+
+
+### 两个因素影响我们判断均值间是否有差异：
+
+#### 均值间的差异
+
+
+![](http://i4.fuimg.com/611786/e565f50a1db472a0.jpg)
+
+![](http://i4.fuimg.com/611786/3cedd8547a1d84ee.jpg)
+
+
+
+### 样本方差的大小
+
+
+
+![](http://i4.fuimg.com/611786/b47b0e5762c60e1c.jpg)
+
+
+![](http://i4.fuimg.com/611786/5c3faf1bb5244d83.jpg)
+
+
+
+
+### 两种估计总体方差的方式
+
+#### 基于样本方差的估计
+
+从样本中我们可以得到多个总体方差的无偏估计值(unbiased estimator)，如对于样本一和样本二来说：
+
+$$s_1^2=\frac{\sum_{i=1}^{n_1}(x_{i1}-\bar{x_1})^2}{n_1-1}$$
+
+$$s_2^2=\frac{\sum_{i=1}^{n_2}(x_{i2}-\bar{x_2})^2}{n_2-1}$$
+
+
+虽然各组样本的方差皆为总体方差的无偏估计式，但是更佳、更有效率的估计为充分运用
+所有的样本观察值，即将各组的观察值集合起来一起得到一个混和估计值：
+
+$$s_p^2=\frac{s_1^2(n_1-1)+s_2^2(n_2-1)+\dots+s_k^2(n_k-1)}{n_1+n_2+\dots+n_k-K}$$
+
+可视为样本方差的加权平均值，权重为：
+$$\frac{n_j-1}{n_1+n_2+\dots+n_k-K}$$
+    
+
+
+由于：
+
+
+$$ s_j^2=\frac{\sum_{i=1}^{n_j}(x_{ij}-\bar{x_j})^2}{n_j-1}$$
+$$ s_j^2=\frac{SS_{j}}{n_j-1}$$
+所以：
+
+$$s_p^2=\frac{SS_1+SS_2+\dots+SS_k}{n_1+n_2+\dots+n_k-K}$$
+
+$$s_p^2=\frac{SS_1+SS_2+\dots+SS_k}{N-K}$$
+
+令：
+$$SSW=SS_1+SS_2+\dots+SS_k$$
+
+则：
+$$s_p^2=\frac{SSW}{N-K}$$
+
+在这种情境下，$s_p^2$也被称为MSW (Mean Square Within)组内均方或均方误差MSE(Mean Square Error)。
+
+$$MSW=\frac{SSW}{N-K}$$
+
+
+
+
+#### 基于样本均值分布的估计
+
+如果总体为正态分布，则样本平均数的抽样分布为：
+$$\bar{x} \sim N(\mu, \frac{\sigma^2}{n})$$
+
+将样本均值看作从样本均值分布$N(\mu, \frac{\sigma^2}{n})$中抽取的随机样本，则可估计此分布的方差：
+
+$$s_{\bar{x}}^2=\frac{\sum_{j=1}^K(\bar{x_j}-\bar{\bar{x}})^2}{K-1}$$
+
+根据中心极限定理，知：
+
+
+$$\sigma_{\bar{x_j}}^2=\frac{\sigma^2}{n_j}$$
+
+那么：
+
+$$\sigma^2=n_j\sigma_{\bar{x_j}}^2$$
+
+$\sigma^2$的估计值为：
+$$\hat{\sigma}^2=n_js_{\bar{x_j}}^2$$
+
+
+
+$$\hat{\sigma}^2=n_j\frac{\sum_{j=1}^k(\bar{x_j}-\bar{\bar{x}})^2}{K-1}$$
+$$\hat{\sigma}^2=\frac{\sum_{j=1}^k n_j(\bar{x_j}-\bar{\bar{x}})^2}{K-1}$$
+
+$$\hat{\sigma}^2=\frac{n_1(\bar{x_1}-\bar{\bar{x}})^2+n_2(\bar{x_2}-\bar{\bar{x}})^2+
+\dots+n_k(\bar{x_k}-\bar{\bar{x}})^2}{K-1}$$
+
+
+
+令：
+$$SSB=n_1(\bar{x_1}-\bar{\bar{x}})^2+n_2(\bar{x_2}-\bar{\bar{x}})^2+
+\dots+n_k(\bar{x_k}-\bar{\bar{x}})^2$$
+
+
+则：
+$$\hat{\sigma}^2=\frac{SSB}{K-1}$$
+
+
+在这种情境下，$\hat{\sigma}^2$也被称为MSB (Mean Square Between)组间均方。
+
+$$MSB=\frac{SSB}{K-1}$$
+
+
+### 两个期望
+
+
+
+#### 基于MSW的期望
+
+\begin{align*}
+MSW&=E(\frac{SSW}{N-K})\\
+   &=E(\frac{\sum_{j=1}^K(n_j-1)s_j^2}{N-K})\\
+   &=\frac{1}{N-K}E(\sum_{j=1}^K(n_j-1)s_j^2))\\
+   &=\frac{\sum_{j=1}^K(n_j-1)}{N-K}E(s_j^2)\\
+   &=\sigma^2
+\end{align*}
+
+
+#### 基于MSB的期望
+
+
+\begin{align*}
+E(n_js_{\bar{x_j}}^2)&=E(\frac{SSB}{K-1})\\
+                     &=E(\frac{\sum_{j=1}^k n_j(\bar{x_j}-\bar{\bar{x}})^2}{K-1})\\
+                     &=\frac{1}{K-1}E(\sum_{j=1}^k n_j(\bar{x_j}-\bar{\bar{x}})^2)\\
+                     &=\frac{1}{K-1}E(\sum_{j=1}^k n_j \bar{x_j}^2-N \bar{\bar{x}}^2)\\
+                     &=\frac{1}{K-1}(\sum_{j=1}^k n_j E(\bar{x_j}^2))-N E(\bar{\bar{x}}^2))
+\end{align*}
+
+
+
+考虑期望的定义，$E(x)=\mu=\Sigma{xf(x)}$
+
+$E(s_2^2)$就是观测值和均值之差$(X-\mu)$的平方的期望。
+\begin{align*}
+    \sigma^2&=E[(X-\mu)^2]\\
+            &=E(X^2-2X\mu+\mu^2)\\
+            &=E(X^2)-2\mu E(X)+E(\mu^2)\\
+            &=E(X^2)-2\mu \mu+\mu^2\\
+            &=E(X^2)-\mu^2\\
+            &=E(X^2)-[E(X)]^2
+\end{align*}
+
+
+
+
+由于：
+$$\sigma_{\bar{x_j}}^2=E(\bar{x_j}^2)-[E(\bar{x_j})]^2$$
+
+所以：
+
+\begin{align*}
+E(n_js_{\bar{x_j}}^2)&=\frac{1}{K-1}(\sum_{j=1}^k n_j E(\bar{x_j}^2))-N E(\bar{\bar{x}}^2))\\
+&=\frac{1}{K-1}(\sum_{j=1}^k n_j (\frac{\sigma^2}{n_j}+\mu_j^2)-N (\frac{\sigma^2}{N}+\mu^2)))\\
+&=\frac{1}{K-1}(\sum_{j=1}^k\sigma^2+\sum_{j=1}^k n_j\mu_j^2-\sigma^2-N\mu^2)\\
+&=\frac{1}{K-1}(k\sigma^2-\sigma^2+\sum_{j=1}^k n_j\mu_j^2-N\mu^2)\\
+&=\sigma^2+\frac{1}{K-1}\sum_{j=1}^k n_j(\mu_j-\mu)^2
+\end{align*}
+
+
+上式分为两部分，第一部分是$\sigma^2$，第二个部分是:
+$$\frac{1}{K-1}\sum_{j=1}^k n_j(\mu_j-\mu)^2$$
+
+
+### 比较系统差异和抽样误差
+
+$$统计量=\frac{系统差异+抽样误差}{抽样误差}$$
+
+
+
+对于MSW来说，其期望就是已知抽样规模情况下，反映抽样误差的总体方差$\sigma^2$。
+
+对于MSB来说，其前一个部分是已知抽样规模情况下，反映抽样误差的总体方差$\sigma^2$，后一个部分是系统差异，如果虚无假设为真，则$\sum_{j=1}^k n_j(\mu_j-\mu)^2$为零：
+
+\begin{align*}
+E(n_js_{\bar{x_j}}^2)&=\sigma^2+\frac{1}{K-1}\sum_{j=1}^k n_j(\mu_j-\mu)^2\\
+&=\sigma^2
+\end{align*}
+
+否则，\begin{align*}
+E(n_js_{\bar{x_j}}^2)&=\sigma^2+\frac{1}{K-1}\sum_{j=1}^k n_j(\mu_j-\mu)^2\\
+&>\sigma^2
+\end{align*}
+且随着$\mu_j$与$\mu$的差距的增大而增大。
+
+
+此时，我们就可以构建统计量$F$：
+
+$$F=\frac{MSB}{MSW}$$
+
++ F统计量服从自由度为(K-1)及(N-K)的F分布。
++ 如果$H_0$为真，分子分母皆为总体方差无偏估计值，两者的比率会十分接近1，
++ 如果$H_0$为不真，则MSB会高估总体方差，F值会大于1。F愈大，$H_0$愈不可能为真。
+
+
+### 计算问题
+
+
+$$(x_{ij}-\bar{\bar{x}})=(\bar{x_j}-\bar{\bar{x}})+(x_{ij}-\bar{x_j})$$
+
+
+两边取平方得到：
+\begin{equation*}
+\sum_{j=1}^k \sum_{i=1}^{n_j}(x_{ij}-\bar{\bar{x}})^2=\sum_{j=1}^k \sum_{i=1}^{n_j}(\bar{x_j}-\bar{\bar{x}})^2+
+\sum_{j=1}^k \sum_{i=1}^{n_j}(x_{ij}-\bar{x_j})^2+2\sum_{j=1}^k \sum_{i=1}^{n_j}(\bar{x_j}-\bar{\bar{x}})(x_{ij}-\bar{x_j})
+\end{equation*}
+
+可以证明第三项为零。
+\begin{equation*}
+\sum_{j=1}^k \sum_{i=1}^{n_j}(x_{ij}-\bar{\bar{x}})^2=\sum_{j=1}^k \sum_{i=1}^{n_j}(\bar{x_j}-\bar{\bar{x}})^2+
+\sum_{j=1}^k \sum_{i=1}^{n_j}(x_{ij}-\bar{x_j})^2
+\end{equation*}
+
+
++ 等式左边为SST，其含义是所有的观测值与总体均值差异的平方和。
+
++ 等式右边第一项为SSB，也称组间变异，各组均值减去总体均值的差的平方乘以$n_j$后加和。
+
+$$SSB=n_1(\bar{x_1}-\bar{\bar{x}})^2+n_2(\bar{x_2}-\bar{\bar{x}})^2+
+\dots+n_k(\bar{x_k}-\bar{\bar{x}})^{2}$$
+
+$$SSB=\sum_{j=1}^k n_j(\bar{x_j}-\bar{\bar{x}})^2$$
+
+
++ 等式右边第二项为SSW，也称组内变异，为观测值减去所在组的组均值的差的平方和，再对各组的组内平方和进行相加。
+
+
+
+\begin{align*}
+SSW&=\sum_{i=1}^{n_1}(x_{i1}-\bar{x_1})^2+\sum_{i=1}^{n_2}(x_{i2}-\bar{x_2})^2+\dots+
+\sum_{i=1}^{n_k}(x_{ik}-\bar{x_k})^2\\
+SSW&=\sum_{j=1}^k \sum_{i=1}^{n_j}(x_{ij}-\bar{x_j})\\
+SSW&=SS_1+SS_2+\dots+SS_k
+\end{align*}
+
+
+
++ 得到F值
+
+$$F=\frac{MSB}{MSW}$$
+
+$$F=\frac{SSB/(K-1)}{SSW/(N-K)}$$
+
+
+### R中实现单因素方差分析
+
+#### 基本代码
+
+
+```{r}
+library(car)
+CarData<-read.table(file="CarData.txt",header=TRUE)
+CarData$ModelYear<-as.factor(CarData$ModelYear)
+aov(MPG~ModelYear,data=CarData)
+OneWay<-aov(MPG~ModelYear,data=CarData)
+summary(OneWay)
+```
+
+
+
+```{r}
+# install.packages("gplots")
+library("gplots")
+plotmeans(MPG~ModelYear,data=CarData,p=0.95,use.t=TRUE,xlab="年代车型",ylab="平均MPG",main="不同年代车型MPG总体均值变化折线图(95%置信区间)")
+
+```
+
+
+
+
+
+#### 正态性检验
+
+
+
+```{r}
+library(car)
+ qqPlot(lm(MPG ~ ModelYear, data = CarData), simulate = TRUE, 
+    main = "车型mpg Q-Q图", labels = FALSE)
+```
+
+
+
+
+#### 方差齐性检验
+
+```{r}
+leveneTest(CarData$MPG,CarData$ModelYear, center=mean)
+```
+
+
+```{r}
+bartlett.test(MPG ~ ModelYear, data = CarData)
+```
+
+
+
+#### 事后检验
+
+
+```{r}
+OneWay<-aov(MPG~ModelYear,data=CarData)
+OneWay$coefficients
+
+```
+
+
+
+
+```{r}
+TukeyHSD(OneWay,ordered=FALSE,conf.level=0.95)
+# Result<-TukeyHSD(OneWay,ordered=TRUE,conf.level=0.95)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
