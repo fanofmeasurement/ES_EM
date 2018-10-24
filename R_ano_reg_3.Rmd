@@ -364,10 +364,475 @@ TukeyHSD(OneWay,ordered=FALSE,conf.level=0.95)
 
 
 
+## 回归分析
+
+### 方差分析和回归分析的异同
+
+
+![](http://i4.fuimg.com/611786/eb6b048ffbc76e8f.jpg)
+
+
+回归和方差分析的异同在于：
+
++ 方差分析的分组变量是因子(factor)，因子可以是有序的，有可以是无序的，但是回归分析中的自变量是scale的，可以在一个量尺上平滑游走。
+
+![](http://i4.fuimg.com/611786/c88e8753c9712efb.jpg)
+
+  
+  
++ 方差分析猜测组均值与组均值之间有差异，但是对哪组均值大哪组均值小没有假设。
+
++ 和方差分析相同的是，回归分析也猜测组均值之间有差异，而且猜测可能x越大，组均值越小；或者，x越小，组均值越大。
+
++ 回归分析还猜测，组均值变大或者变小的速度是固定的，即线性的：
+
+
+$$\frac{y_2-y_1}{x_2-x_1}=\frac{y_3-y_2}{x_3-x_2}$$
+
+![](http://i4.fuimg.com/611786/2ac984164052d69b.jpg)
+
++ 这种情况下，如果组均值间有差异，那么在x轴上任意取两个x值，只要其相对应的y的组均值有差异，则所有的组均值间都有差异。
+
++ 同时，我们在二维坐标系上，将x和对应的组均值连成一条线，这条线的斜率也不为0。因若斜率为0，则各组均值就相同了。
+
++ 这条线就是回归线，这条线上的纵坐标就是给定x时，y的分布的均值。
+
+
+### 关于回归的误区
+
++ 说到回归，容易想到这样一条线：
+
+![](http://i2.tiimg.com/611786/2eae1c6d1140ad17.jpg)
+
++ 似乎把x和y在坐标系里标记出来，然后“瞄”出来一条线就是回归线。这种图主要是数据量小，数据量大了之后，看到的散点图是这样：
+
+![](http://i2.tiimg.com/611786/1f56eb62f29a3f9f.jpg)
+
++ 给定x的值后，有很多y值与之对应：
+
+![](http://i2.tiimg.com/611786/043a0c6d705a5744.jpg)
+
++ y是x的条件分布，换言之，y就是方差分析中的一组一组的数据，x是分组变量，只是这个分组变量是连续的。
+
++ 一般化的话，是这样：
+
+![](http://i4.fuimg.com/611786/cf56509174e943d4.jpg)
+
+或者这样:
+
+![](http://i2.tiimg.com/611786/358e7e02c6c0e119.jpg)
+
+
+
++ 既然y是给定x的条件分布，那么这个分布是什么形态呢？它的期望和方差又是什么？
+
+    + 正态分布（回归分析的假设之一：y服从正态分布）
+    + 均值就是预测值，也就是组均值（回归分析的假设之一，残差均值为0），而且x不同，组均值也不同
+    + 虽然各条件分布的组均值不同，但是方差相同（回归分析的假设之一：齐方差）
+
+
+
+### 到底均值间有没有差异？
+
+我们可以继续方差分析的思路，方差分析里是通过下面公式来判断的：
+
+$$F=\frac{MSB}{MSW}$$
+
+回归分析也一样，只是把符号换一下：
+
+
+$$F=\frac{MSR}{MSE}$$
+
+还是可以认为有两种方式估计总体方差，一种是计算样本方差的加权平均值，一种是基于均值抽样分布。第二种方法里，如果虚无假设为真，则其对总体方差的估计应该接近第一种方法。
+
+方差分析的计算，需要观测值$x_{ij}$、组均值$\bar{x_j}$和总的均值$\bar{\bar{x}}$，对回归分析来说，$y_{ij}$和$\bar{\bar{y}}$都已知，只是$\bar{y_j}$不知道。
 
 
 
 
+![](http://i2.tiimg.com/611786/c2dd4c5277021e4a.png)
+
+
+
+
++ 有的同学可能会问，$\bar{y_j}$也可以计算出来。
+
++ 需要注意的是，方差分析中对组均值没有假设，但是回归分析则假设组均值一定在回归线上，这才是期望的均值。
+
++ 如果我们知道了给定x时候，y的期望，也就是预测值$\hat{y}$（即给定x时候，y的条件分布的均值\bar{y_j}$），就可以计算：
+
+$$F=\frac{MSR}{MSE}$$
+
++ 如果我们知道了回归线的位置，自然可以计算$\hat{y}$，所以求解$\hat{y}$就变成了对回归系数的求解。
+
+
+### 估计回归系数的方法
+
+
+
+回归系数的估计有许多种方法，最常用的为最小二乘法(ordinary least squares method, OLS)及最大似然法(Maximum likelihood method)，我们的目标是要找出一条线，使每一个观察值与预测值的距离的平方和最小。
+
+![](http://i4.fuimg.com/611786/4a4cc5c367fd18ff.jpg)
+
+
+
+由于残差值有正有负，无法正确测量出两者的距离，因此将残差值加以平方。即$(e_i^2+e_2^2+e_3^2+\dots+e_n^2)$的值最小。
+
+
+\begin{align*}
+    SSE&=(e_i^2+e_2^2+e_3^2+\dots+e_n^2)\\
+            &=\sum_{i=1}^n(e_i^2)\\
+            &=\sum_{i=1}^n(y_i-\hat{y_i})^2\\
+            &=\sum_{i=1}^n(y_i-b_0-b_1x_i)^2
+\end{align*}
+
+这样就变成了一个极值问题，f(x)的极小值出现在切线斜率等于零的时候。
+
+
+![](http://i2.tiimg.com/611786/f961bb5f3af8a3f7.jpg)
+
+$\frac{\partial SSE}{\partial b_0}=0$且$\frac{\partial SSE}{\partial b_1}=0$时，SSE有最小值。
+
+令$a=b_0$，$b=b_1$，
+
+\begin{align*}
+    SSE&=\sum_{i=1}^n(y_i-b_0-b_1x_i)^2\\
+       &=(y_1-a-bx_i)^2+(y_2-a-bx_2)^2+\dots+(y_n-a-bx_n)^2
+\end{align*}
+
+
+对$a$求微分：
+
+$$2(y_1-a-bx_1)(-1)+2(y_2-a-bx_2)(-1)+\dots+2(y_n-a-bx_n)(-1)=0$$
+
+$$(a+a+\dots+a)+b(x_1+x_2+\dots+x_n)=y_1+y_2+\dots+y_n$$
+
+$$na+b\sum x_i=\sum y_i$$
+
+
+两边除以n，
+$$a+b\bar{x}=\bar{y}$$
+
+所以，$$a=\bar{y}-b\bar{x}$$
+
+
+对$b$求微分：
+$$2(y_1-a-bx_1)(-x_1)+2(y_2-a-bx_2)(-x_2)+\dots+2(y_n-a-bx_n)(-x_n)=0$$
+$$a(x_1+x_2+\dots+x_n)+b(x_1^2+x_2^2+\dots+x_n^2)=x_1y_1+x_2y_2+\dots+x_ny_n $$
+
+$$a\sum x_i+b\sum x_i^2=\sum x_iy_i$$
+
+由于
+$$a=\bar{y}-b\bar{x}=\frac{\sum y_i}{n}-b\frac{\sum x_i}{n}$$
+
+所以，
+$$(\frac{\sum y_i}{n}-b\frac{\sum x_i}{n})\sum x_i+b\sum x_i^2=\sum x_iy_i$$
+
+
+
+$$\frac{\sum y_i}{n}-b\frac{\sum x_i}{n})\sum x_i+b\sum x_i^2=\sum x_iy_i$$
+
+$$\frac{\sum x_i \sum y_i}{n}-b\frac{(\sum x_i)^2}{n}+b\sum x_i^2=\sum x_iy_i$$
+
+$$b(\sum x_i^2-\frac{(\sum x_i)^2}{n})=\sum x_iy_i-\frac{\sum x_i \sum y_i}{n}$$
+
+\begin{equation*}
+    b=\frac{\sum x_iy_i-\frac{\sum x_i \sum y_i}{n}}{\sum x_i^2-\frac{(\sum x_i)^2}{n}}
+\end{equation*}
+
+
+知道了系数，就可以计算$\hat{y}$，然后就可以计算$F$值了。
+
+
+
+### 多自变量回归方程
+
+
+多自变量回归一般叫muliple regression，是在一个多维空间里的回归。
+
+![](http://i2.tiimg.com/611786/63bb57ba2d8ba3c7.jpg)
+
+
+
+
+####  线性回归方程的建立
+
+```{r}
+CarData<-read.table(file="CarData.txt",header=TRUE)
+CarData$ModelYear<-as.factor(CarData$ModelYear)
+pairs(~MPG+weight+displacement+horsepower,data=CarData)
+```
+
+
+```{r}
+Fit<-lm(MPG~weight+displacement+horsepower,data=CarData)
+```
+
+
+```{r}
+coefficients(Fit)
+```
+
+
+####  2. 显著性检验和调整
+
+```{r}
+summary(Fit)
+confint(Fit)
+```
+
+
+
+```{r}
+Fit<-lm(MPG~weight+horsepower,data=CarData)
+summary(Fit)
+```
+
+####  预测值
+
+```{r}
+FitMPG<-predict(Fit,CarData,type="response")
+plot(CarData$weight,CarData$MPG,pch=1,xlab="自重",ylab="MPG")
+points(CarData$weight,FitMPG,pch=10,col=2)
+legend("topright",c("实际值","拟合值"),pch=c(1,10),col=c(1,2))
+```
+
+
+
+####  残差是否正态？
+
+```{r}
+fitted(Fit)
+residuals(Fit)
+```
+
+```{r}
+par(mfrow=c(2,2))
+plot(Fit)
+```
+
+因变量做BOX-COX变换，BOX-COX变换是指$y^{\lambda}$，常见的是对数转换。
+
+```{r}
+Fit<-lm(log(MPG)~weight+horsepower,data=CarData)
+summary(Fit)
+par(mfrow=c(2,2))
+plot(Fit)
+```
+
+
+也可以用*car*包中的**powerTransform**函数，估计$\lambda$的值。
+
+```{r}
+library("car")
+summary(powerTransform(CarData$MPG))
+```
+
+$\lambda$的值可取0.5，即开根号。
+
+```{r}
+Fit<-lm(sqrt(MPG)~weight+horsepower,data=CarData)
+summary(Fit)
+par(mfrow=c(2,2))
+plot(Fit)
+```
+
+
+####  残差是否齐方差？
+
+可以观察图形，也可以用*car*包中的**spreadLevelPlot**函数，**spreadLevelPlot**函数会给出$\lambda$的建议值。
+
+```{r}
+Fit<-lm(sqrt(MPG)~weight+horsepower,data=CarData)
+spreadLevelPlot(Fit) 
+```
+
+
+####  残差是否独立？
+
+DW检验在截面数据中意义不大。
+
+```{r}
+library("car")
+durbinWatsonTest(Fit)    ##独立性检验
+```
+
+
+
+
+####  高杠杆值的探测
+
+杠杆值是针对X而言的，指其取值对y的影响较大，使用函数**hatvalues**。
+
+```{r}
+LeveragePlot<-function(fit){
+ Np<-length(coefficients(fit))-1
+ N<-length(fitted(fit))
+ plot(hatvalues(fit),main="观测点的杠杆值序列图",ylab="杠杆值",xlab="观测编号")
+ abline(2*(Np+1)/N,0,col="red",lty=2)
+ abline(3*(Np+1)/N,0,col="red",lty=2)
+ identify(1:N,hatvalues(fit),names(hatvalues(fit)))
+}
+Fit<-lm(sqrt(MPG)~weight+horsepower,data=CarData)
+LeveragePlot(Fit)
+```
+
+
+
+
+
+####  离群点的探测
+
+
+离群点是针对y而言的。可以用图形的方法观察，也可以用学生化残差的值做判断，用*car*包中的**outlierTest**函数。
+
+```{r}
+Fit<-lm(log(MPG)~weight+horsepower,data=CarData)
+rstudent(Fit)
+```
+
+
+```{r}
+par(mfrow=c(2,2))
+plot(Fit)
+```
+
+
+
+```{r}
+library("car")
+outlierTest(Fit)
+```
+
+第388个case可能是离群点，删除掉后在进行检验：
+
+```{r}
+Fit<-lm(log(MPG)~weight+horsepower,data=CarData[-388,])
+outlierTest(Fit)
+```
+
+又发现第112个case可能是离群点。
+
+
+
+
+####  强影响点的探测
+
+![](http://i1.fuimg.com/611786/0ecad8a02be34839.png)
+
+
+R中获取库克距离的函数是**cooks.distance**，若大于$\frac{4}{n-k-1}$就认为是influence points，一般认为大于1就算。
+
+```{r}
+Fit<-lm(log(MPG)~weight+horsepower,data=CarData)
+plot(cooks.distance(Fit),main="Cook's distance",cex=0.5) 
+```
+
+
+```{r}
+Np<-length(coefficients(Fit))-1
+N<-length(fitted(Fit))
+CutLevel<-4/(N-Np-1)
+plot(Fit,which=4)
+abline(CutLevel,0,lty=2,col="red")
+```
+
+
+
+
+
+```{r}
+Fit0<-lm(log(MPG)~weight+horsepower,data=CarData[-117,])
+plot(cooks.distance(Fit0),main="Cook's distance",cex=0.5) 
+```
+
+
+
+
+用*car*包中的**influencePlot**函数可对异常值的情况进行综合判断。
+
+
+
+```{r}
+Fit<-lm(log(MPG)~weight+horsepower,data=CarData)
+influencePlot(Fit,id.method="identify",main="异常观测点的可视化")
+```
+
+
+####  多重共线性
+
+VIF的值大于10意味着有严重的多重共线性。
+
+```{r}
+Fit<-lm(log(MPG)~weight+horsepower,data=CarData)
+library("car")
+vif(Fit)
+```
+
+
+
+
+#### PRE的概念
+
+多自变量回归会出现很多问题，其中一个是模型比较的问题。我们总是希望找到简约有力的模型，简约是指变量少，有力是指解释力大。解释力大，反过来说，就是残差小。
+
+假设有两个模型，一个复杂一点，叫MODEL A，一个简约一点，叫MODEL C。MODEL A的残差是SSE(A)，MODEL C的残差是SSE(C)，二者的差就是MODEL A比MODEL C多解释的部分，叫SSR。
+
+$$SSR=SSE(C)-SSE(A)$$
+
+那么PRE就是：
+
+$$PRE=1-\frac{SSE(A)}{SSE(C)}=\frac{SSR}{SSE(C)}$$
+
+PRE体现了“有力”的差异，简约怎么体现呢？就是用参数个数的差(PA-PC)。
+
+如何进行比较呢？
+
+$$F^*=\frac{PRE/(PA-PC)}{(1-PRE)/(n-PA)}$$
+
+我们假设每个变量的解释力都相等，那么有没有一些自变量特别给力，特别说明问题呢。假设我们已经挑出来的自变量就是这样的变量，那么他们到底怎么样，需要比较一下，这些挑出来的变量平均可以解释多少变异，那些备选变量平均可以解释多少变异，如果二者差异大，说明挑出来的变量不错，否则，那也是芸芸众生。
+
++ 分子的含义是：每个新增参数平均解释了多少变异；
++ 分母的含义是：如果把可以加的参数都加上，这些参数平均可以解释多少待解释的变异。
+
+```{r}
+Fit1<-lm(log(MPG)~weight+horsepower,data=CarData)
+Fit2<-lm(log(MPG)~weight+horsepower+displacement,data=CarData)
+summary(Fit1)
+summary(Fit2)
+anova(Fit1,Fit2)
+```
+
+
+#### 虚拟变量的问题
+
+
+```{r}
+CarData$ModelYear<-as.factor(CarData$ModelYear)
+Fit<-lm(log(MPG)~ModelYear,data=CarData)
+summary(Fit)
+```
+
+```{r}
+(table(CarData$ModelYear))
+```
+
+
+```{r}
+tmp<-subset(CarData,CarData$ModelYear=="70"|CarData$ModelYear=="71")
+tresult<-t.test(log(MPG)~ModelYear,data=tmp,paired=FALSE,var.equal=TRUE)
+```
+
+
+```{r}
+(tresult$estimate[1]-tresult$estimate[2])
+```
+
+
+```{r}
+Fit<-lm(log(MPG)~weight+horsepower+ModelYear,data=CarData)
+summary(Fit)
+```
 
 
 
