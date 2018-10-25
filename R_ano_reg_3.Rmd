@@ -574,7 +574,7 @@ coefficients(Fit)
 ```
 
 
-####  2. 显著性检验和调整
+####  显著性检验和调整
 
 ```{r}
 summary(Fit)
