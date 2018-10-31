@@ -583,10 +583,56 @@ confint(Fit)
 
 
 
+
 ```{r}
 Fit<-lm(MPG~weight+horsepower,data=CarData)
 summary(Fit)
 ```
+
+
+#### partial and part correlation(Semi-Partial)
+
+![](http://i2.tiimg.com/611786/208d755f4833f705.jpg)
+
+```{r}
+# install.packages('ppcor')
+library(ppcor)
+```
+
+
+
+**偏相关**
+
+```{r}
+pcor(y.data)
+```
+
+
+**part correlation**
+
+```{r}
+y.data<-na.omit(CarData[,c(1,3,4,5)])
+spcor(y.data)
+
+```
+
+#### partial regression coefficient
+
+```{r}
+Fit1<-lm(MPG~weight+displacement+horsepower,data=CarData)
+Fit2<-lm(MPG~displacement+horsepower,data=CarData)
+rs2<-residuals(Fit2)
+Fit3<-lm(weight~displacement+horsepower,data=CarData)
+rs3<-residuals(Fit3)
+Fit4<-lm(rs2~rs3)
+
+summary(Fit1)
+summary(Fit2)
+summary(Fit3)
+summary(Fit4)
+```
+
+
 
 ####  预测值
 
@@ -769,6 +815,12 @@ library("car")
 vif(Fit)
 ```
 
+VIF的值是以weight对horsepower进行回归时$1-R^2$的倒数。
+
+```{r}
+Fit<-lm(weight~horsepower,data=CarData)
+summary(Fit)
+```
 
 
 
