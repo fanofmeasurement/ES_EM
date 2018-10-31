@@ -604,6 +604,8 @@ library(ppcor)
 **偏相关**
 
 ```{r}
+CarData<-read.table(file="CarData.txt",header=TRUE)
+y.data<-na.omit(CarData[,c(1,3,4,5)])
 pcor(y.data)
 ```
 
