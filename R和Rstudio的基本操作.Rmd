@@ -1,0 +1,393 @@
+---
+title: "R和Rstudio的基本操作"
+output:
+  html_document:
+    toc: yes
+    number_sections: yes
+    author: 朱谦
+---
+    
+```{r include=FALSE}
+options(digits = 3)
+```
+    
+R是当前最为流行的一种统计编程语言，而Rstudio则是R语言最为流行的一种编辑器
+    
+# Rstudio的窗口
+    
+大家现在应该都已经下载好了R和Rstudio这两个软件。
+    
+## 新建R文件
+对于Rstudio，平时最常用的功能就是用它来进行编程或写作，对应的，可以建立两类文件来达成我们的目的，一类是R Script，对应文件后缀名.Rmd，另一类是R markdown文件，对应文件后缀名是.R。
+    
+![](新建R文件.png)
+    
+## Tools工具栏
+### Install Packages
+    
+像R和python这样的编程语言之所以功能强大，很大一部的原因在于这些语言背靠着开源的社区，不断地有人在开发新的功能，封装到程序包中给其他人使用，所以安装和调用程序包对于R语言来说是一件基础而重要的工作。
+    
+![](installpackages.png)
+    
+可以尝试安装openxlsx包
+    
+### Global Options
+    
+![](globaloptions.png)
+    
+在Global Options这个选项是指rstudio软件的全局设置，我们对于Rstudio如果没有别的特殊需求的话只需要关心general、apearance、packages三个选项就可以了
+    
++ general r软件的位置
++ appearance rstudio的外观
++ packages 镜像的位置
+    
+## 左侧窗口
+    
+左上角的窗口名字叫做代码编辑器，顾名思义，这是用来编辑代码的窗口，在rstudio中打开后缀名为.R的文件，同时在键盘上敲击Ctrl和Enter，或者鼠标点击代码编辑器右上方的“Run”，就可以运行选中的代码。
+当然，对于.Rmd后缀的文件来说，左上角这个窗口也是文件写作的平台，可以使用markdown来写作自己的文件。
+    
+左下角的窗口有三个部分，
+    
++ console是r语言指令的控制台，所有在左上角窗口中选中并运行的代码都可以在这里看到，也可以在下面直接输入R的代码
++ terminal可以向电脑的操作系统发送指令，（如放大镜：`magnify`）
++ RMarkdown则反映在rmd文件中生成新的文本文件时后台运行的情况。
+    
+```{r,warning=FALSE,message=FALSE}
+#尝试新建一个r script文件，在代码编辑器和control窗口输入下列代码，看看是否能产生和我一样的结果
+(1*2+3^4)/5
+
+print("你好，世界")
+
+for (i in 1:10) {
+  print(i^2)
+}
+```
+
+    
+## 右上角窗口
+    
+右上角的窗口分成environment、history、connections三个标签页
+    
+我们知道studio这个单词的意思是“工作台”，如果把整个rstudio比作工作台的话，那么左上角的部分就是我们所要完成的产品，左下角就是工作的工艺和流程，而右上角的environment这个标签页中负责存放的是我们需要加工的材料和工具。如果你之前运行了for的循环，就可以看到在这个区域出现了value-i，i的值为10(L:这个数是整数)；此外，你也可以输入`x<-c(1:10)`和`y<-log(x)`，创建向量x：`r x<-c(1:10);x`和向量y：ln(x)
+`r y<-log(x)`；如果继续输入代码`A<-data.frame(x,y)`，在values这一栏的上方就会出现Data栏目和对象A`r A<-data.frame(x,y)`，这是我们最常用的一种数据形式，名字叫做数据框（obs：观测数/行数，variable：变量数/列数），用鼠标左键点击A，在左上角会跳出一个窗口，向你详细展示A这个数据框的具体情况，你也可以在console中输入`fix(A)`，查看并修改A的数据，当然，Data栏里还能存放list、matrix等类型的数据，有兴趣的话可以看r_script.R这个文件。除了Data和values以外，还有一个function栏，如果创建自定义函数如`f<-function(x){x+1}``r f<-function(x){x+1}`，就能在这个栏里看到这些函数。如果想要移除环境中的某个对象，可以采用rm()函数，如`rm(x)`，就可以把先前的对象x删除。
+    
+旁边还需要提一下的是history标签，其中储存着代码历史，从中可以查询或者导出以前的运行记录。
+    
+## 右下角窗口
+    
+右下角的内容多一点，比较常用的是plots和help。
+    
+plots标签下，展示绘图函数产生的图片
+```{r,warning=FALSE,message=FALSE}
+rm(list = ls())#删除右上角所有对象
+
+#在代码编辑器和control窗口输入下列代码，看看是否会产生如下结果
+set.seed(1)
+e<-rnorm(30)
+x<-c(1:30)
+y<-2+0.75*x+e
+plot(x,y,type = 'p')
+abline(lm(y~x),col='red')
+
+```
+    
+如果想要了解某个函数，比如说lm，可以运行代码?lm或者help(lm)，或者直接在help栏中输入想要查询的函数，更详细一点，可以运行代码example(lm)，查看为这个函数提供的例子。在了解了这个lm函数以后，就可以通过简单的几行代码，来建立一个简单的线性模型了。
+    
+除了plots和help以外，packages这一栏里包含了现在R能调用的所有程序包，点击这些包的名字，可以进入help栏查询它们的函数，点击左侧框框，可以直接调用这些包，而上面install和update，则可以用来下载和更新程序包。
+    
+![](packages.png)
+    
+# 读入文件
+    
+先前我们讨论的都是基于在R中创建的数据，问题在于，我们平时用的数据，有很多都是Excel、csv或者spss的格式，那么如何对这些数据进行处理呢？
+    
+## 不同类型文件的读入
+    
+基础的R语言只能读取txt或者csv类型的，要想导入excel，就需要调用相应的R包，这里推荐使用openxlsx包，这个包在安装完毕之后就可以直接读取.xlsx文件。此外，调用Hmisc包或者foreign包就可以导入其他统计软件产生的数据，比如说这边导入的spss数据。
+    
+```{r warning=FALSE,message=FALSE}
+data1<-read.csv('data.csv')#读入csv文件
+
+library(openxlsx)
+#librar(xlsx)
+data2<-read.xlsx('data.xlsx')#读入xlsx文件
+
+library(Hmisc)
+data3<-spss.get('data.sav')#读入spss数据文件
+
+library(foreign)
+data4<-read.spss('data.sav')#读入spss数据文件
+
+```
+    
+`r rm(list=c('data1','data2','data3','data4'))`
+    
+## 文件路径
+    
+不知道有没有学姐前一段代码运行失败，或者之前也遇到过没法导入文件的问题，这是因为你只告诉了电脑这个文件的名字叫做data.csv（或者别的什么），但是电脑并不知道你所指的data.csv在哪个文件夹里。你可以通过输入文件的绝对路径来一劳永逸地解决这个问题：
+    
+`data1<-read.csv('E:/OneDrive/Documents/教育统计/base-operating-of-R/data.csv')#注意，R中斜杠/的方向整好与windows给出的\方向相反`
+    
+我们也可以更深一步地讨论，为什么同样一段代码，有些时候能把文件读入进来，有些时候就不行呢？
+    
+大家可以试一下，能不能先运行`setwd('C：/')`，再运行`data1<-read.csv('data.csv')`
+    
+这个问题取决于你的r现在所处的工作空间，如果是直接打开rstudio软件，就会进入~/工作空间，如果通过双击文件打开了rstudio，那么就会默认以该文件所在的文件夹作为工作空间，工作空间可以在左下角console标签的下方看到，也可以通过getwd()函数来返回当前的工作空间；有意思的是，在rmarkdown的代码块中运行代码，默认的是将这个rmarkdwon文件所处的文件夹作为工作空间，这可能会和console所在的工作空间有所不同。
+    
+![](path.png)
+    
+
+如果不想在代码中加入绝对路径，我们也可以用函数setwd()来修改现有的工作空间，从而使文件只通过相对路径就可以被调用。
+
+# 数据编辑
+
+在进入这个章节前需要创建一个名字叫做leadership的数据框
+```{r}
+manager <- c(1, 2, 3, 4, 5) 
+date <- c("10/24/08", "10/28/08", "10/1/08", "10/12/08", "5/1/09") 
+country <- c("US", "US", "UK", "UK", "UK") 
+gender <- c("M", "F", "F", "M", "F") 
+age <- c(32, 45, 25, 39, 99) 
+q1 <- c(5, 3, 3, 3, 2) 
+q2 <- c(4, 5, 5, 3, 2) 
+q3 <- c(5, 2, 5, 4, 1) 
+q4 <- c(5, 5, 5, NA, 2) 
+q5 <- c(5, 5, 2, NA, 1) 
+leadership <- data.frame(manager, date, country, gender, age, 
+                         q1, q2, q3, q4, q5, stringsAsFactors=FALSE) 
+```
+    
+## 数据查看
+    
+数据的查看有很多种方式：
+    
+1.单击右上角Data栏中的对象名，或者运行代码>`View(leadership)`;  
+2.运行代码>`fix(leadership)`，同时查看和修改  
+3.直接运行对象名，如>`leadership`  
+    
+如果只是查看部分数据，可以在对象名后输入中括号，如>`leadership[1,1]`，或者>`leadership[c(8:10),c(3,5:7)]`，对于数据框的数据而言，可以用符号\$返回特定的变量，如>`leadership$age`
+    
+## 创建新变量
+R的算术运算符
+```
+变量名 <- 表达式
+“表达式”部分可包含运算符和函数
++    –    *    /  
+^ 或 ** 
+x%%y
+x%/%y
+```
+在数据框中加入新变量
+```{r}
+mydata<-data.frame(x1 = c(2, 2, 6, 4), 
+                   x2 = c(3, 4, 2, 8)) 
+
+#method1
+mydata$sumx  <-  mydata$x1 + mydata$x2 
+mydata$meanx <- (mydata$x1 + mydata$x2)/2 
+
+#method2 
+attach(mydata) 
+mydata$sumx  <-  x1 + x2 
+mydata$meanx <- (x1 + x2)/2 
+detach(mydata) 
+ 
+#method3
+mydata <- transform(mydata, 
+                    sumx  =  x1 + x2, 
+                    meanx = (x1 + x2)/2) 
+```
+    
+## 简单的数据处理
+### 变量的重编码
+
+逻辑运算符
+```
+<  小于 
+<=  小于或等于 
+>  大于 
+>=  大于或等于 
+==  严格等于 ①  
+!=  不等于 
+!x  非 x  
+x | y 
+x 或 y  
+x & y 
+x 和 y  
+isTRUE(x)  测试 x 是否为 TRUE  
+```
+不妨假设你希望将 leadership 数据集中经理人的连续型年龄变量 age 重编码为类别型变量
+agecat （ Young 、  Middle Aged 、 Elder ）。首先，必须将99岁的年龄值重编码为缺失值，使用
+的代码为： 
+```{r}
+leadership$age[leadership$age  == 99]    <- NA 
+```
+语句 variable[condition] <- expression 将仅在 condition 的值为 TRUE 时执行赋值。 
+在指定好年龄中的缺失值后，你可以接着使用以下代码创建 agecat 变量： 
+```{r}
+leadership$agecat[leadership$age  > 75]  <- "Elder" 
+leadership$agecat[leadership$age >= 55 &  
+                  leadership$age <= 75]  <- "Middle Aged" 
+leadership$agecat[leadership$age  < 55]  <- "Young" 
+```
+
+### 变量的重命名
+手动：`fix(leadership)`
+    
+编程：
+```{r}
+names(leadership)
+names(leadership)[2] <- "testDate"
+names(leadership)[6:10] <- c("item1", "item2", "item3", "item4", "item5") 
+leadership
+```
+    
+### 缺失值
+判断缺失值：is.na()函数
+```{r}
+y <- c(1, 2, 3, NA) 
+is.na(y) 
+is.na(leadership[,6:10]) 
+```
+    
+重编码为缺失值：前面提到的`leadership$age[leadership$age  == 99]    <- NA `
+    
+排除缺失值
+```{r}
+x <- c(1, 2, NA, 3)
+y <- x[1] + x[2] + x[3] + x[4]
+z <- sum(x)
+z
+z<-sum(x,na.rm=TRUE)
+z
+na.omit(x)
+```
+
+    
+### 类型转换
+    
+R与其他统计编程语言有着类似的数据类型转换方式。举例来说，向一个数值型向量中添加一个字符串会将此向量中的所有元素转换为字符型
+```
+数值    is.numeric()    as.numeric()
+字符串  is.character()  as.character()
+向量    is.vector()     as.vector()
+矩阵    is.matrix()     as.matrix()
+数据框  is.data.frame() as.data.frame()
+因子    is.factor()     as.factor()
+逻辑值  is.logical()    as.logical()
+```
+如果没有特殊需求，判断数据类型更常用的是函数`mode()`,`typeof()`或者`str()`，
+```{r}
+mode(manager)
+typeof(country)
+str(leadership$agecat)
+```
+    
+例：
+```{r}
+is.character(manager)
+as.character(manager)
+```
+    
+### 数据排序
+按年龄升序排序
+```{r}
+newdata <- leadership[order(leadership$age),]
+```
+先女性后男性，年龄升序排序
+```{r,message=FALSE}
+attach(leadership)
+newdata <- leadership[order(gender, age),]
+detach(leadership)
+```
+先女性后男性，年龄降序排序
+```{r,message=FALSE}
+attach(leadership)
+newdata <-leadership[order(gender, -age),]
+detach(leadership)
+```
+
+### 数据集合并
+    
+
+```{r}
+dataframeA<-data.frame(ID=c(1,3,4,2,3,4),
+                       Country=c('US','JP','GM','CN','JP','GM'),
+                       age=c(14,55,33,22,44,34))
+dataframeB<-data.frame(ID=c(2,2,3,3,4,1),
+                       Country=c('CN','CN','JP','JP','GM','US'),
+                       salary=c(3000,8000,10000,20000,9000,50000))
+```
+    
+用merge函数合并
+```{r}
+merge(dataframeA, dataframeB, by=c("ID","Country"))
+```
+    
+不考虑数据内部的关系，用简单粗暴的方式合并
+```{r}
+#合并各列
+cbind(dataframeA, dataframeB)
+```
+```{r}
+#合并各行(只能合并列名相等的行)
+rbind(dataframeA[1:3,1:2], dataframeB[1:2,1:2])
+```
+    
+### 选取子集
+
+选入（保留）变量
+```{r}
+#method1
+newdata <- leadership[, c(6:10)]
+#method2
+myvars <- c("item1", "item2", "item3", "item4", "item5")
+newdata <-leadership[myvars]
+#method3
+myvars <- paste("item", 1:5, sep="")
+newdata <- leadership[myvars]
+```
+
+剔除（丢弃）变量
+```{r}
+#method1
+myvars <- names(leadership) %in% c("item3", "item4")
+newdata <- leadership[!myvars]
+#method2
+newdata <- leadership[c(-8,-9)]
+#method3
+leadership$item3 <- leadership$item4 <- NULL
+```
+    
+将大于三十岁的男性数据选入newdata
+    
+```{r}
+#method1
+newdata <- leadership[1:3,]
+newdata <- leadership[leadership$gender=="M" &
+                        leadership$age > 30,]
+#method2
+attach(leadership)
+newdata <- leadership[gender=='M' & age > 30,]
+detach(leadership)
+```
+    
+挑选某一时间区间内的数据
+    
+```{r}
+leadership$testDate <- as.Date(leadership$testDate, "%m/%d/%y")
+startdate <- as.Date("2009-01-01")
+enddate <- as.Date("2009-10-31")
+newdata <- leadership[which(leadership$testDate >= startdate &
+                              leadership$testDate <= enddate),]
+```
+    
+## 结果导出
+与数据读入一样，在r中处理完成之后，数据也可以导出到电脑指定的文件夹中，具体可以参见write.csv函数，以及openxlsx包write.xlsx函数的说明，这类函数都可以写作>`write.xxx(data1,'data1.xxx')`的形式。
+    
+例如：
+```{r}
+write.xlsx(leadership,'leadership.xlsx')
+```
+
+
