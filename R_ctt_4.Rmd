@@ -1,0 +1,374 @@
+---
+title: "教育测量与统计——经典测量理论"
+author: "李峰 江西财经大学"
+date: '`r strftime(Sys.time(), format = "%B %d, %Y")`'
+output:
+  html_document: 
+    number_sections: yes
+    toc: yes
+---
+
+
+
+## 数据准备
+
+
+
+
+```{r,message=FALSE,echo=FALSE}
+library(psych)
+```
+
+
+
+```{r,message=FALSE,echo=FALSE}
+fn <- "http://personality-project.org/r/datasets/Maps.mixx.msq1.epi.bf.txt"
+mydata <- read.file(fn,header=TRUE)
+```
+
+
+```{r}
+dim(mydata)
+describe(mydata)
+```
+
+```{r}
+cleaned <- scrub(mydata,where=2:73,isvalue=9,newvalue=NA)
+describe(cleaned)
+```
+
+
+
+## 测量概述
+
+### 测量是一个基本的科学活动。
+> 邓肯（Ducan, 1984）认为，古代的人在解决社会和实践问题过程中，实现了对长度、距离、面积、重量和时间的测量，物理科学就是建立在这些成就基础上的。社会测量，如投票、人口普查等最初是为了满足大众需要，不仅仅是好奇心。
+
+
+### 早期例子
+
+
++ 中国科举考试
+
+![](http://i1.fuimg.com/611786/4eea053ffa622cbc.jpg)
+
++ 苏格拉底法
+
+![](http://i1.fuimg.com/611786/4529a63806c6312f.jpg)
+
+
+
+### 统计方法的出现
+
++ 高尔顿对智力遗传的关注催生了今天的**回归**
++ 高尔顿的晚辈同事皮尔逊设计了检查变量间系统关系的数学方法：**Person Correlation**
++ 斯皮尔曼为因素分析的发展和普及奠定基础
++ 智力测验的发展，最早的比纳（Alfred Binet）智力测验
+
+![](http://i1.fuimg.com/611786/df7d2828d6d6ba5f.jpg)
+
+### 心理物理学的作用
+
++ 英国科技发展协会委员会（The Commission of the British Association for Advancement of Science）认为：
+
+> 心理变量的基本测量因其排序或添加感官知觉时面临难题而无法进行
+
++ 斯蒂芬（S.Smith Steven）认为，个体可以对声音强度做出基本连续的比率判断，这种比率属性可以对测量数据进行数学处理
+
+> 斯蒂芬把测量分成定类、定序、定距和定比四个尺度
+
++ 瑟斯顿（Louis L. Thurstone）发展了因素分析的数学基础，**是把心理物理法应用到社会测量中去的人**。
+
++ 邓肯认为，
+
+> “测量不仅仅是数字的分配，还应遵循某一物体或事件的属性......或品质的不同程度进行的数字分配”
+
+
+### 心理测量领域的拓展
+
++ 信度和效度的概念被广泛采用
++ 因素分析广受欢迎
++ 运用社会科学方法编制的量表包含的远远多于心理测量学最初关注的变量
+
+
+
+## 潜变量
+
+### 结构与测量
+
++ 当我们想测量那些拼接我们对世界的理论理解而相信其存在但又无法直接感知的对象时，我们就编制量表。
+
+    + 比如我们用消沉或焦虑来解释我们观测的行为
+    + 消沉或焦虑和我们看到的行为并不等同
+    + 而且消沉或焦虑还可能包含着其他没有观测到的行为
+    + 但这些影响着行为，但它们是无形的
+
+
+### 量表
+
+> 都有很多题项构成，并构成一个复合分数，试图揭示不能轻易直接观察的理论变量的水平，这样的测量工具就是量表。
+
++ 但是也不是所有现象都需要量表来测量
+
+    + 年龄
+    + 性别
+    + 种族
+    + 婚姻
+
+
+
+
++ 一般来说，研究者对结构感兴趣，而不是对题项或量表本身感兴趣。
+
+    + 测量父母对孩子的期望
+    + 负面情绪水平
+    + 意志力
+    + 社会经济地位
+
++ 一个量表反映的潜在现象或结构通常被称为潜在变量，潜在变量有两个特征：
+
+    + 不是显现的，父母对孩子的成就期望不是轻易可以观察到的
+    + 结构可变，它的某些方面会随着时间、地点、任务的变化而变化
+
+
+```{r}
+# install.packages("igraph")
+library(igraph)
+
+setwd("E:/OneDrive/LECTURES/2018_fall/ES/ES_EM")
+
+SNA<-openxlsx::read.xlsx("SNA1.xlsx")
+SNA<-as.matrix(SNA)
+SNA<-SNA[,-1]
+
+SNA<-graph_from_adjacency_matrix(SNA)
+SNA
+
+# plot(SNA,layout=layout.fruchterman.reingold,
+#      edge.arrow.size=0.1,
+#      vertex.color=rainbow(7,alpha=0.3),
+#      edge.arrow.mode = "-")
+
+#vertex.size=1表示节点的大小
+#layout表示布局方式（发散性）
+#vertex.label=NA,不显示任何点信息，默认显示idx号
+#vertex.color=V(g)$color 点的颜色设置
+#mark.groups表示设置分组
+#vertex.shape='none'不带边框 
+#vertex.label.cex=1.5, #节点字体大小
+#vertex.label.color='red'
+#edge.arrow.size=0.7 #连线的箭头的大小
+#edge.color = grey(0.5)#线的颜色
+#edge.arrow.mode = "-" 箭头换成线
+#vertex.label.dist=5  点标签和节点之间的距离一般0.1，便于错开重叠
+
+
+
+deg<-degree(SNA)*3
+plot(SNA,
+     layout=layout_in_circle,
+     vertex.size=10,
+     vertex.color="gold",
+     vrtex.label.cex=0.6,
+     vertex.label.dist=-3,
+     edge.arrow.size=0.8,
+     edge.curved=0,
+     vertex.label.color='black',
+     edge.color = grey(0.5),
+     type="l",
+     vertex.shapes=NULL)
+```
+
+
++ 题项和潜变量
+  
+    + 如果一个题项是由一个潜变量造成的，那么这个值与潜在变量的分数之间就应该是相关的
+    + 但是没有这个真实分数
+    + 如果几个选项都是由一个潜变量造成的，那么我们就可以看出它们之间是相关的
+
+上面的例子中，如果*成就期望*到*愿意做几乎所有事情来确保孩子的成功*的标准路径系数是0.5，到*孩子的成就决定我自己的成功*的标准路径系数是0.8，那么*愿意做几乎所有事情来确保孩子的成功*和*孩子的成就决定我自己的成功*的相关就是$r = 0.5*0.8 = 0.4$
+
+
+
+```{r}
+my.scales <- cleaned[74:86]
+violinBy(my.scales[1:5])
+pairs.panels(my.scales[c(1,4,5:10)],gap=0,pch=".")
+```
+
+```{r}
+R <- lowerCor(my.scales[c(1,4,5:10)])
+cor.plot(R,numbers=TRUE)
+```
+
+
+
+```{r}
+corr.test(my.scales[c(1,4,5:10)])
+ci <- cor.ci(my.scales[c(1,4,5:10)])
+cor.plot.upperLowerCi(ci)
+```
+
+那么，如果有题项之间的相关值，加上其他的一些假设我们就可以计算标准路径系数的值：
+
+$b_1*b_2=0.6$
+$b_2*b_3=0.3$
+$b_1*b_3=0.9$
+
+$b_1*b_2=0.6$
+$b_2*\frac{0.9}{b1}=0.3$
+
+
+$b_2*\frac{0.9}{\frac{0.6}{b2}}=0.3$
+
+
+### 经典的测量假设
+
++ 误差服从期望为0的正态分布
+
+![](http://i2.tiimg.com/611786/358e7e02c6c0e119.jpg)
+
++ 误差彼此独立
++ 误差与潜变量不相关
++ 每个题项的误差量相等
+
+
+```{r}
+# install.packages("igraph")
+library(igraph)
+
+setwd("E:/OneDrive/LECTURES/2018_fall/ES/ES_EM")
+
+SNA<-openxlsx::read.xlsx("SNA2.xlsx")
+SNA<-as.matrix(SNA)
+SNA<-SNA[,-1]
+
+SNA<-graph_from_adjacency_matrix(SNA)
+SNA
+
+# plot(SNA,layout=layout.fruchterman.reingold,
+#      edge.arrow.size=0.1,
+#      vertex.color=rainbow(7,alpha=0.3),
+#      edge.arrow.mode = "-")
+
+#vertex.size=1表示节点的大小
+#layout表示布局方式（发散性）
+#vertex.label=NA,不显示任何点信息，默认显示idx号
+#vertex.color=V(g)$color 点的颜色设置
+#mark.groups表示设置分组
+#vertex.shape='none'不带边框 
+#vertex.label.cex=1.5, #节点字体大小
+#vertex.label.color='red'
+#edge.arrow.size=0.7 #连线的箭头的大小
+#edge.color = grey(0.5)#线的颜色
+#edge.arrow.mode = "-" 箭头换成线
+#vertex.label.dist=5  点标签和节点之间的距离一般0.1，便于错开重叠
+
+
+
+deg<-degree(SNA)*3
+plot(SNA,
+     layout=layout_in_circle,
+     vertex.size=10,
+     vertex.color="gold",
+     vrtex.label.cex=0.6,
+     vertex.label.dist=-3,
+     edge.arrow.size=0.8,
+     edge.curved=0,
+     vertex.label.color='black',
+     edge.color = grey(0.5),
+     type="l",
+     vertex.shapes=NULL)
+```
+
+
+
+## 信度
+
+信度是心理计量学中的一个基本话题。
+
+> 量表的信度是指与潜在变量的实际分数的方差比例。
+
+
++ 如果一个题项与潜在变量间有强相关，那么它们彼此之间也有强相关。
++ 高的题项相关有两个可能的原因：
+
+     + 一个题项是另一个题项的原因
+     + 它们有共同的原因
+     
+
+
+### 内部一致性
+
+我们可以把一套题项分数中所有可变性看作以下两种原因作用的结果：
+
++ 潜变量的变化
++ 误差
+
+前者可以看作信号，后者可以视为噪音。
+
+#### 协方差矩阵
+
+$$cov(X.Y)=\frac{\Sigma_{i=1}^n(X_i-\bar{X})(Y_i-\bar{Y})}{n-1}$$
+![](http://i2.tiimg.com/611786/95a695d310d71e9a.jpg)
+
+
+
+![](http://i2.tiimg.com/611786/1b00fe23d1d90c75.jpg)
+
+只有协方差表示共有的变化，所有非共有变化都在主对角线的方差中，用$\Sigma\sigma_i^2$来表示，总体方差用$\sigma_y^2$来表示。
+则：
+$$\alpha = 1-\frac{\Sigma\sigma_i^2}{\sigma_y^2}$$
+
+如果协方差矩阵的所有值都是1，使用上式计算的$\alpha$并不是1，因为矩阵中共有元素的数量是$k^2-k$，而非$k^2$，所以需要对上式矫正一下：
+
+
+$$\alpha = \frac{k}{k-1}(1-\frac{\Sigma\sigma_i^2}{\sigma_y^2})$$
+```{r}
+data(bfi)
+alpha(bfi[1:5])
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
