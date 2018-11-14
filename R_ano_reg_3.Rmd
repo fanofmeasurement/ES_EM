@@ -769,7 +769,13 @@ outlierTest(Fit)
 ![](http://i1.fuimg.com/611786/0ecad8a02be34839.png)
 
 
-R中获取库克距离的函数是**cooks.distance**，若大于$\frac{4}{n-k-1}$就认为是influence points，一般认为大于1就算。
+R中获取库克距离的函数是**cooks.distance**:
+
+$$D=\frac{\Sigma_{j=1}^n(\hat{y_j}-\hat{y_{j(i)}})^2}{ps^2}$$
+
+
+
+若大于$\frac{4}{n-k-1}$就认为是influence points，一般认为大于1就算。
 
 ```{r}
 Fit<-lm(log(MPG)~weight+horsepower,data=CarData)
