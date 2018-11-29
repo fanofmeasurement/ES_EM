@@ -6,6 +6,7 @@ output:
   html_document: 
     number_sections: yes
     toc: yes
+    toc_depth: 4
 ---
 
 
@@ -114,7 +115,6 @@ describe(cleaned)
     + 性别
     + 种族
     + 婚姻
-
 
 
 
@@ -233,53 +233,6 @@ $b_2*\frac{0.9}{\frac{0.6}{b2}}=0.3$
 + 每个题项的误差量相等
 
 
-```{r}
-# install.packages("igraph")
-library(igraph)
-
-setwd("E:/OneDrive/LECTURES/2018_fall/ES/ES_EM")
-
-SNA<-openxlsx::read.xlsx("SNA2.xlsx")
-SNA<-as.matrix(SNA)
-SNA<-SNA[,-1]
-
-SNA<-graph_from_adjacency_matrix(SNA)
-SNA
-
-# plot(SNA,layout=layout.fruchterman.reingold,
-#      edge.arrow.size=0.1,
-#      vertex.color=rainbow(7,alpha=0.3),
-#      edge.arrow.mode = "-")
-
-#vertex.size=1表示节点的大小
-#layout表示布局方式（发散性）
-#vertex.label=NA,不显示任何点信息，默认显示idx号
-#vertex.color=V(g)$color 点的颜色设置
-#mark.groups表示设置分组
-#vertex.shape='none'不带边框 
-#vertex.label.cex=1.5, #节点字体大小
-#vertex.label.color='red'
-#edge.arrow.size=0.7 #连线的箭头的大小
-#edge.color = grey(0.5)#线的颜色
-#edge.arrow.mode = "-" 箭头换成线
-#vertex.label.dist=5  点标签和节点之间的距离一般0.1，便于错开重叠
-
-
-
-deg<-degree(SNA)*3
-plot(SNA,
-     layout=layout_in_circle,
-     vertex.size=10,
-     vertex.color="gold",
-     vrtex.label.cex=0.6,
-     vertex.label.dist=-3,
-     edge.arrow.size=0.8,
-     edge.curved=0,
-     vertex.label.color='black',
-     edge.color = grey(0.5),
-     type="l",
-     vertex.shapes=NULL)
-```
 
 
 
@@ -307,7 +260,7 @@ plot(SNA,
 
 前者可以看作信号，后者可以视为噪音。
 
-#### 协方差矩阵
+### 协方差矩阵
 
 $$cov(X.Y)=\frac{\Sigma_{i=1}^n(X_i-\bar{X})(Y_i-\bar{Y})}{n-1}$$
 ![](http://i2.tiimg.com/611786/95a695d310d71e9a.jpg)
@@ -324,43 +277,122 @@ $$\alpha = 1-\frac{\Sigma\sigma_i^2}{\sigma_y^2}$$
 
 
 $$\alpha = \frac{k}{k-1}(1-\frac{\Sigma\sigma_i^2}{\sigma_y^2})$$
+
+### 主观量表的信度
+
 ```{r}
 data(bfi)
 alpha(bfi[1:5])
 ```
 
 
+```{r}
+alpha(bfi[1:5], check.keys =TRUE)
+```
+
+
+
+```{r}
+library(foreign)
+addr<-'E:/OneDrive/LECTURES/2018_fall/ES/CEPS基线调查学生数据.sav'
+t2<-read.spss(file=addr,use.value.labels = FALSE, to.data.frame = TRUE)
+t3<-t2[,c('a1801','a1802','a1803','a1804','a1805')]
+alpha(t3)
+```
+
+
+
+### 考试数据的信度
+
+
+```{r}
+library(CTT)
+data(CTTdata) #person answer data
+data(CTTkey)  #the correct answers
+distractor.analysis(CTTdata,CTTkey)       #contingency tabling
+```
+
+```{r}
+scores <- score(CTTdata,CTTkey,output.scored=TRUE,rel=TRUE) 
+score.transform(scores$score,mu.new=0,sd.new=1)  #scaling 
+alpha(scores$scored)  
+```
 
 
 
 
 
+## 效度
+
+> 效度就是一个量表是否测到要测的东西。
+
+
+### 效度的类型
+
++ 内容效度
++ 标准-内容相关效度
++ 结构效度
+
+
+### 内容效度
+
+> 一个特定的题项集合对内容范畴的反映程度。
+
++ 对社会经济地位的测量,有个题目是问家里有几个房间，这个题目的内容效度好不好？
++ 了解城市家庭的贫困程度，有个指标是家庭劳动力占比，还有个指标是工资性收入数量，哪个指标好？两个指标是否可替换？
+
+### 标准-相关效度
+
+> 一个题项或量表与某个标准只有一个理论上的联系。
+
++ 一些心理筛选量表与受测者是否接受精神治疗间的关系
++ 高考与大学表现的关系
+
+
+### 结构效度
+
+> 一个变量与其他变量间的关系，表现了所意欲测量的结构与已经建立的其他结构间的相关程度。
+
+
+
+```{r}
+fa.parallel(cleaned[2:73])
+```
 
 
 
 
+```{r}
+nfactors(cleaned[2:73])
+```
 
 
 
 
+```{r}
+fa.parallel(t3)
+nfactors(t3)
+```
+
+
+
+```{r}
+f0 <- fa(cleaned[2:73],2)
+summary(f0)
+```
 
 
 
 
+```{r}
+print(f0,sort=TRUE)
+```
 
 
 
-
-
-
-
-
-
-
-
-
-
-
+```{r}
+fa.plot(f0,labels=colnames(cleaned[2:73]),cex=.5,title="2 dimensions of Questionnaire")
+```
 
 
 
